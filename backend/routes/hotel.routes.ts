@@ -1,5 +1,16 @@
 import express, { Request, Response, NextFunction } from 'express';
+import {
+  addHotel,
+  getHotels,
+  getNearbyHotels,
+  getHotelDetails,
+} from '../controllers/hotel.controller';
 
-const Router = express.Router();
+const router = express.Router();
 
-export default Router;
+router.post('/register', addHotel);
+router.get('/get-nearby-hotels/', getNearbyHotels);
+router.get('/gethotels', getHotels);
+router.get('/:hotelid', getHotelDetails);
+
+export default router;

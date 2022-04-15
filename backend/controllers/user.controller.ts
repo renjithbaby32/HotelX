@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken';
 import User from '../models/user.model';
+import Booking from '../models/booking.model';
 
 /**
  * @api {post} /api/v1/user/signin
@@ -15,7 +16,7 @@ export const authUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  if (user.isBlocked) {
+  if (user && user.isBlocked) {
     res.status(401);
     throw new Error('You are blocked!');
   }
@@ -71,4 +72,19 @@ export const registerUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Invalid user data');
   }
+});
+
+/**
+ * @api {get} /api/v1/user/bookings
+ * @apiName UserBookings
+ * Returns all the bookings of the user.
+ */
+export const getBookings = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const bookings = await Booking.find({
+    user: userId,
+  }).populate('hotel', 'name city state mainImage ');
+
+  res.status(200).json(bookings);
 });
