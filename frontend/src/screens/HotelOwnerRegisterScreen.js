@@ -127,9 +127,7 @@ const HotelOwnerRegisterScreen = () => {
               ></Form.Control>
             </Form.Group>
 
-            <Button variant={'contained'} type={'submit'}>
-              Submit
-            </Button>
+            <Button type={'submit'}>Submit</Button>
           </FormikForm>
         )}
       </Formik>

@@ -208,7 +208,15 @@ const HotelDetailsScreen = () => {
                           value={selectedDate}
                           onChange={(newValue) => {
                             dispatch(clearAvailalbility());
-                            setSelectedDate(newValue);
+                            if (
+                              differenceInDays(newValue, selectedEndDate) > 1 ||
+                              differenceInDays(newValue, new Date()) < 1
+                            ) {
+                              setDateError(true);
+                            } else {
+                              setDateError(false);
+                              setSelectedDate(newValue);
+                            }
                           }}
                           renderInput={(params) => <TextField {...params} />}
                         />

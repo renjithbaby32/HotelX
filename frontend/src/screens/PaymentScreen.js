@@ -6,12 +6,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { bookRooms } from '../features/booking/bookingSlice';
 import { Alert, AlertTitle, Stack } from '@mui/material';
 import axios from 'axios';
+import { useIdentity } from '../utils/identity';
 
 export const PaymentScreen = () => {
   const [paymentMethod, setPaymentMethod] = useState('Razorpay');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useIdentity();
 
   const booking = JSON.parse(localStorage.getItem('booking'));
 
@@ -43,7 +45,12 @@ export const PaymentScreen = () => {
 
         const { data } = await axios.post(
           `http://localhost:5000/api/v1/booking/payment/razorpay`,
-          { booking }
+          { booking },
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
         );
 
         const options = {

@@ -10,11 +10,11 @@ import adminRouter from './routes/admin.routes';
 import hotelRouter from './routes/hotel.routes';
 import hotelOwnerRouter from './routes/hotelOwner.routes';
 import bookingRouter from './routes/booking.routes';
+import { cloudinaryConfig } from './config/cloudinary.config';
 
 import { errorHandler, notFound } from './middleware/errorMiddleWare';
 
 import connectDB from './config/db';
-import { cloudinaryConfig } from './config/cloudinary.config';
 connectDB();
 
 config();
