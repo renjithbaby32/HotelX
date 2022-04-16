@@ -30,15 +30,14 @@ const columns = [
 
 export const DateWiseCheckIns = () => {
   const dispatch = useDispatch();
-  const { checkInDetails, checkOutDetails } = useSelector(
+  const { checkInDetails, checkOutDetails, hotelOwner } = useSelector(
     (state) => state.hotelOwner
   );
-  console.log(checkOutDetails);
   const { hotelid, date: checkInDate } = useParams();
 
   useEffect(() => {
-    dispatch(getCheckInDetailsOfTheDay({ hotelid, checkInDate }));
-    dispatch(getCheckOutDetailsOfTheDay({ hotelid, checkInDate }));
+    dispatch(getCheckInDetailsOfTheDay({ hotelid, checkInDate, hotelOwner }));
+    dispatch(getCheckOutDetailsOfTheDay({ hotelid, checkInDate, hotelOwner }));
   }, []);
 
   const [page, setPage] = React.useState(0);

@@ -56,10 +56,15 @@ export const verifyOTP = createAsyncThunk(
 
 export const getUpComingBookings = createAsyncThunk(
   'hotelOwners/getUpComingBookings',
-  async ({ startDate, endDate, hotelId }) => {
+  async ({ startDate, endDate, hotelId, hotelOwner }) => {
     const { data } = await axios.post(
       `http://localhost:5000/api/v1/hotel-owner/upcoming-bookings`,
-      { startDate, endDate, hotelId }
+      { startDate, endDate, hotelId },
+      {
+        headers: {
+          Authorization: `Bearer ${hotelOwner.token}`,
+        },
+      }
     );
     return data;
   }
@@ -67,9 +72,14 @@ export const getUpComingBookings = createAsyncThunk(
 
 export const getCheckInDetailsOfTheDay = createAsyncThunk(
   'hotelOwners/getBookingDetailsOfTheDay',
-  async ({ hotelid, checkInDate }) => {
+  async ({ hotelid, checkInDate, hotelOwner }) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/booking/checkin/${hotelid}?checkInDate=${checkInDate}`
+      `http://localhost:5000/api/v1/booking/checkin/${hotelid}?checkInDate=${checkInDate}`,
+      {
+        headers: {
+          Authorization: `Bearer ${hotelOwner.token}`,
+        },
+      }
     );
     return data;
   }
@@ -77,9 +87,14 @@ export const getCheckInDetailsOfTheDay = createAsyncThunk(
 
 export const getCheckOutDetailsOfTheDay = createAsyncThunk(
   'hotelOwners/getCheckOutDetailsOfTheDay',
-  async ({ hotelid, checkInDate: checkOutDate }) => {
+  async ({ hotelid, checkInDate: checkOutDate, hotelOwner }) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/booking/checkout/${hotelid}?checkOutDate=${checkOutDate}`
+      `http://localhost:5000/api/v1/booking/checkout/${hotelid}?checkOutDate=${checkOutDate}`,
+      {
+        headers: {
+          Authorization: `Bearer ${hotelOwner.token}`,
+        },
+      }
     );
     return data;
   }
@@ -87,9 +102,14 @@ export const getCheckOutDetailsOfTheDay = createAsyncThunk(
 
 export const getHotels = createAsyncThunk(
   'hotelOwners/getHotels',
-  async (hotelOwnerId) => {
+  async (hotelOwner) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/hotel-owner/gethotels/${hotelOwnerId}`
+      `http://localhost:5000/api/v1/hotel-owner/gethotels/${hotelOwner._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${hotelOwner.token}`,
+        },
+      }
     );
     return data;
   }

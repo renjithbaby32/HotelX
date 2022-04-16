@@ -13,6 +13,7 @@ import { addDays, format } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getHotel } from '../features/hotel/hotelSlice';
 import { Button } from 'react-bootstrap';
+import { useIdentity } from '../utils/identity';
 
 const columns = [
   { id: 'date', label: 'date', minWidth: 170 },
@@ -28,6 +29,7 @@ export const UpcomingBookingsScreen = () => {
   const navigate = useNavigate();
   const { upcomingBookings } = useSelector((state) => state.hotelOwner);
   const { hotel } = useSelector((state) => state.hotel);
+  const { hotelOwner } = useIdentity('hotelOwner');
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
@@ -42,6 +44,7 @@ export const UpcomingBookingsScreen = () => {
   };
 
   React.useEffect(() => {
+    console.log(hotelOwner);
     dispatch(getHotel(hotelid));
 
     dispatch(
@@ -49,6 +52,7 @@ export const UpcomingBookingsScreen = () => {
         startDate,
         endDate,
         hotelId: hotelid,
+        hotelOwner,
       })
     );
   }, []);

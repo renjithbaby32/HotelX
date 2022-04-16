@@ -4,22 +4,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getBookings } from '../features/users/usersSlice';
 import { useIdentity } from '../utils/identity';
 import { format } from 'date-fns';
+import { useParams } from 'react-router-dom';
 export const BookingsScreen = () => {
   const dispatch = useDispatch();
-  const { user } = useIdentity('user');
+  const { userid } = useParams();
   const { bookings } = useSelector((state) => state.user);
 
-  bookings && bookings.map((booking) => console.log(booking));
-
   useEffect(() => {
-    dispatch(getBookings(user._id));
+    dispatch(getBookings(userid));
   }, []);
 
   return (
     <>
       {bookings &&
         bookings.map((booking) => (
-          <Card sx={{ minWidth: 275 }}>
+          <Card key={booking._id} sx={{ minWidth: 275 }}>
             <CardMedia
               component="img"
               height="250"

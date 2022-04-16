@@ -15,7 +15,7 @@ import { PaymentScreen } from './screens/PaymentScreen';
 import { BookingsScreen } from './screens/BookingsScreen';
 import { UpcomingBookingsScreen } from './screens/UpcomingBookingsScreen';
 import { DateWiseCheckIns } from './screens/DateWiseCheckIns';
-
+import Dash from './screens/Dash';
 function App() {
   return (
     <div className="App">
@@ -57,6 +57,7 @@ function App() {
               element={<BookingsScreen />}
             ></Route>
             <Route path={'/payment'} element={<PaymentScreen />}></Route>
+            <Route path={'/dash'} element={<Dash />}></Route>
           </Routes>
         </Container>
       </Router>

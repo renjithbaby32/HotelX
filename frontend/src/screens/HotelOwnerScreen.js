@@ -16,9 +16,9 @@ export const HotelOwnerScreen = () => {
 
   useEffect(() => {
     if (hotelOwner) {
-      dispatch(getHotels(hotelOwner._id));
+      dispatch(getHotels(hotelOwner));
     }
-  }, [hotelOwner]);
+  }, []);
 
   const viewMoreFunction = (hotelId) => {
     navigate(`/hotel-owner/upcoming/${hotelId}`);

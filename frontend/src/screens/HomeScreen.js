@@ -4,10 +4,20 @@ import { addLocationToLocalStorage } from '../features/userLocation/userLocation
 import { getHotels, getNearbyHotels } from '../features/hotel/hotelSlice';
 import { HotelCard } from '../components/HotelCard';
 import { Row, Col } from 'react-bootstrap';
+import { useIdentity } from '../utils/identity';
+import { useNavigate } from 'react-router-dom';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { hotels, nearbyHotels } = useSelector((state) => state.hotel);
+  const { hotelOwner } = useIdentity();
+
+  useEffect(() => {
+    if (hotelOwner) {
+      navigate('/hotel-owner');
+    }
+  }, []);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {

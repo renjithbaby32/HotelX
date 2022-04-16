@@ -5,7 +5,7 @@ import { setUser as setUserAction } from '../features/users/usersSlice';
 import { setHotelOwner as setHotelOwnerAction } from '../features/hotelOwners/hotelOwnerSlice';
 
 export const useIdentity = (identity) => {
-  const [typeOfUser, setTypeOfUser] = useState(identity);
+  console.log('useIdentity');
   const [user, setUser] = useState(localStorage.getItem('user'));
   const [hotelOwner, setHotelOwner] = useState(
     localStorage.getItem('hotelOwner')
@@ -31,7 +31,7 @@ export const useIdentity = (identity) => {
         dispatch(setHotelOwnerAction());
       }
     }
-  }, [typeOfUser]);
+  }, []);
 
   return {
     user: user ? JSON.parse(user) : null,

@@ -8,7 +8,7 @@ import {
   differenceInDays,
   format,
 } from 'date-fns';
-import { RequestWithUser } from '../middleware/authMiddleware';
+import { RequestWithIdentity } from '../middleware/authMiddleware';
 import { razorpay } from '../config/razorpay.config';
 import shortid from 'shortid';
 
@@ -89,7 +89,7 @@ export const checkAvailability = asyncHandler(async (req, res) => {
  * Reserves the hotel for the given dates.
  */
 
-export const bookRooms = asyncHandler(async (req: RequestWithUser, res) => {
+export const bookRooms = asyncHandler(async (req: RequestWithIdentity, res) => {
   let startDate: Date | string = new Date(req.body.startDate);
   let endDate: Date | string = new Date(req.body.endDate);
   const numberOfDays = differenceInDays(endDate, startDate);
@@ -142,19 +142,17 @@ export const bookRooms = asyncHandler(async (req: RequestWithUser, res) => {
  * Returns details about the specified booking
  */
 
-export const getBookingDetails = asyncHandler(
-  async (req: RequestWithUser, res) => {
-    const booking = await Booking.findById(req.params.hotelid).populate(
-      'hotel',
-      'name state city mainImage coordinates'
-    );
-    if (booking) {
-      res.status(200).json(booking);
-    } else {
-      res.status(404);
-    }
+export const getBookingDetails = asyncHandler(async (req, res) => {
+  const booking = await Booking.findById(req.params.hotelid).populate(
+    'hotel',
+    'name state city mainImage coordinates'
+  );
+  if (booking) {
+    res.status(200).json(booking);
+  } else {
+    res.status(404);
   }
-);
+});
 
 /**
  * @api {get} /api/v1/booking/checkin/:hotelid
@@ -162,39 +160,37 @@ export const getBookingDetails = asyncHandler(
  * Returns details about the specified check in details on a specific date in a specific hotel
  */
 
-export const getCheckInDetailsOfTheDay = asyncHandler(
-  async (req: RequestWithUser, res) => {
-    const date = new Date(req.query.checkInDate as string);
-    const bookings = await Booking.find({
-      hotel: req.params.hotelid,
-    }).populate('user', 'name email phone');
+export const getCheckInDetailsOfTheDay = asyncHandler(async (req, res) => {
+  const date = new Date(req.query.checkInDate as string);
+  const bookings = await Booking.find({
+    hotel: req.params.hotelid,
+  }).populate('user', 'name email phone');
 
-    const result: resultType[] = [];
+  const result: resultType[] = [];
 
-    bookings.forEach((booking) => {
-      const day = booking.checkInDate;
-      if (isSameDay(day, date)) {
-        const data = {
-          customerName: booking.user.name,
-          budgetRooms: booking.numberOfBudgetRoomsBooked,
-          premiumRooms: booking.numberOfPremiumRoomsBooked,
-          phone: booking.user.phone,
-          email: booking.user.email,
-          checkInDate: booking.checkInDate,
-          checkOutDate: booking.checkOutDate,
-          amount: booking.amount,
-          amountDue: booking.amount - booking.amountPaid,
-        };
-        result.push(data);
-      }
-    });
-    if (result) {
-      res.status(200).json(result);
-    } else {
-      res.status(404);
+  bookings.forEach((booking) => {
+    const day = booking.checkInDate;
+    if (isSameDay(day, date)) {
+      const data = {
+        customerName: booking.user.name,
+        budgetRooms: booking.numberOfBudgetRoomsBooked,
+        premiumRooms: booking.numberOfPremiumRoomsBooked,
+        phone: booking.user.phone,
+        email: booking.user.email,
+        checkInDate: booking.checkInDate,
+        checkOutDate: booking.checkOutDate,
+        amount: booking.amount,
+        amountDue: booking.amount - booking.amountPaid,
+      };
+      result.push(data);
     }
+  });
+  if (result) {
+    res.status(200).json(result);
+  } else {
+    res.status(404);
   }
-);
+});
 
 /**
  * @api {get} /api/v1/booking/checkout/:hotelid
@@ -202,39 +198,37 @@ export const getCheckInDetailsOfTheDay = asyncHandler(
  * Returns details about the specified check out details on a specific date in a specific hotel
  */
 
-export const getCheckOutDetailsOfTheDay = asyncHandler(
-  async (req: RequestWithUser, res) => {
-    const date = new Date(req.query.checkOutDate as string);
-    const bookings = await Booking.find({
-      hotel: req.params.hotelid,
-    }).populate('user', 'name email phone');
+export const getCheckOutDetailsOfTheDay = asyncHandler(async (req, res) => {
+  const date = new Date(req.query.checkOutDate as string);
+  const bookings = await Booking.find({
+    hotel: req.params.hotelid,
+  }).populate('user', 'name email phone');
 
-    const result: resultType[] = [];
+  const result: resultType[] = [];
 
-    bookings.forEach((booking) => {
-      const day = booking.checkOutDate;
-      if (isSameDay(day, date)) {
-        const data = {
-          customerName: booking.user.name,
-          budgetRooms: booking.numberOfBudgetRoomsBooked,
-          premiumRooms: booking.numberOfPremiumRoomsBooked,
-          phone: booking.user.phone,
-          email: booking.user.email,
-          checkInDate: booking.checkInDate,
-          checkOutDate: booking.checkOutDate,
-          amount: booking.amount,
-          amountDue: booking.amount - booking.amountPaid,
-        };
-        result.push(data);
-      }
-    });
-    if (result) {
-      res.status(200).json(result);
-    } else {
-      res.status(404);
+  bookings.forEach((booking) => {
+    const day = booking.checkOutDate;
+    if (isSameDay(day, date)) {
+      const data = {
+        customerName: booking.user.name,
+        budgetRooms: booking.numberOfBudgetRoomsBooked,
+        premiumRooms: booking.numberOfPremiumRoomsBooked,
+        phone: booking.user.phone,
+        email: booking.user.email,
+        checkInDate: booking.checkInDate,
+        checkOutDate: booking.checkOutDate,
+        amount: booking.amount,
+        amountDue: booking.amount - booking.amountPaid,
+      };
+      result.push(data);
     }
+  });
+  if (result) {
+    res.status(200).json(result);
+  } else {
+    res.status(404);
   }
-);
+});
 
 /**
  * @api {get} /api/v1/booking/payment/razorpay/:bookingid
