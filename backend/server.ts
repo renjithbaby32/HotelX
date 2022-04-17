@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 import compression from 'compression';
 import cors from 'cors';
 import multer from 'multer';
-
+import path from 'path';
 import reviewsRouter from './routes/reviews.routes';
 import userRouter from './routes/user.routes';
 import adminRouter from './routes/admin.routes';
@@ -46,6 +46,26 @@ app.use(`${baseAPI}/user`, userRouter);
 app.use(`${baseAPI}/hotel-owner`, hotelOwnerRouter);
 app.use(`${baseAPI}/hotel`, hotelRouter);
 app.use(`${baseAPI}/booking`, bookingRouter);
+
+const dirname = path.resolve();
+
+if (process.env.NODE_ENV === 'production') {
+  console.log(path.join(dirname, '/frontend/build'));
+  app.use(express.static(path.join(dirname, '/frontend/build')));
+
+  app.get('*', (req, res, next) =>
+    res.sendFile('index.html', { root: '/frontend/build' }, (err) => {
+      if (err) {
+        next(err);
+      }
+    })
+  );
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running....');
+  });
+}
+
 app.use(notFound);
 app.use(errorHandler);
 
