@@ -37,8 +37,6 @@ app.use(`${baseAPI}/hotel-owner`, hotelOwner_routes_1.default);
 app.use(`${baseAPI}/hotel`, hotel_routes_1.default);
 app.use(`${baseAPI}/booking`, booking_routes_1.default);
 app.use(`${baseAPI}/admin`, admin_routes_1.default);
-app.use(errorMiddleWare_1.notFound);
-app.use(errorMiddleWare_1.errorHandler);
 const dirname = path_1.default.resolve();
 if (process.env.NODE_ENV === 'production') {
     app.use(express_1.default.static(path_1.default.join(dirname, '/frontend/build')));
@@ -53,6 +51,8 @@ else {
         res.send('API is running....');
     });
 }
+app.use(errorMiddleWare_1.notFound);
+app.use(errorMiddleWare_1.errorHandler);
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });
