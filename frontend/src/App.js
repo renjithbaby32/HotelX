@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import UserLogin from './screens/UserLoginScreen';
+import { UserLogin } from './screens/UserLoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import UserRegister from './screens/UserRegisterScreen';
 import HotelOwnerLoginScreen from './screens/HotelOwnerLoginScreen';

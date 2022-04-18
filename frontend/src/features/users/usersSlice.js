@@ -4,16 +4,25 @@ import axios from 'axios';
 const initialState = {
   user: null,
   bookings: null,
+  loginError: false,
 };
 
 export const userLogin = createAsyncThunk(
   'users/userLogin',
-  async ({ email, password }) => {
-    const { data } = await axios.post(
-      'http://localhost:5000/api/v1/user/signin',
-      { email, password }
-    );
-    return data;
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        'http://localhost:5000/api/v1/user/signin',
+        { email, password }
+      );
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
   }
 );
 
@@ -55,7 +64,10 @@ const userSlice = createSlice({
     },
     [userLogin.fulfilled]: (state, { payload }) => {
       localStorage.setItem('user', JSON.stringify(payload));
-      return { ...state, user: payload };
+      return { ...state, user: payload, loginError: false };
+    },
+    [userLogin.rejected]: (state, { payload }) => {
+      return { ...state, loginError: true, loginErrorMessage: payload };
     },
     [userRegister.pending]: () => {
       console.log('signup pending');
