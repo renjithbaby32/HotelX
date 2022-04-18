@@ -6,13 +6,19 @@ import { Provider } from 'react-redux';
 import reportWebVitals from './reportWebVitals';
 import { createRoot } from 'react-dom/client';
 import './bootstrap.min.css';
+import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
 
 root.render(
   <Provider store={store}>
-    <App />
+    <HelmetProvider>
+      <Router>
+        <App />
+      </Router>
+    </HelmetProvider>
   </Provider>
 );
 

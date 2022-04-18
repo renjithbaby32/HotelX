@@ -1,4 +1,5 @@
 import './App.css';
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserLogin } from './screens/UserLoginScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -16,12 +17,22 @@ import { BookingsScreen } from './screens/BookingsScreen';
 import { UpcomingBookingsScreen } from './screens/UpcomingBookingsScreen';
 import { DateWiseCheckIns } from './screens/DateWiseCheckIns';
 import { AdminLoginScreen } from './screens/AdminLoginScreen';
+import { AdminDashBoardScreen } from './screens/AdminDashBoardScreen';
 import Dash from './screens/Dash';
+import ThemeProvider from './theme';
+
+const navbarException = [
+  '/login',
+  '/register',
+  '/hotel-owner-login',
+  '/hotel-owner-register',
+];
+
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <NavBar></NavBar>
+    <ThemeProvider>
+      <div className="App">
+        {navbarException.includes(window.location.pathname) ? null : <NavBar />}
         <Container maxWidth="lg">
           <Routes>
             <Route path={'/'} element={<HomeScreen />}></Route>
@@ -58,12 +69,13 @@ function App() {
               element={<BookingsScreen />}
             ></Route>
             <Route path={'/payment'} element={<PaymentScreen />}></Route>
+            <Route path={'/admin'} element={<AdminDashBoardScreen />}></Route>
             <Route path={'/admin-login'} element={<AdminLoginScreen />}></Route>
             <Route path={'/dash'} element={<Dash />}></Route>
           </Routes>
         </Container>
-      </Router>
-    </div>
+      </div>
+    </ThemeProvider>
   );
 }
 
