@@ -72,7 +72,6 @@ export const registerAdmin = asyncHandler(async (req, res) => {
  */
 export const getWeeklyStats = asyncHandler(async (req, res) => {
   const { startDate } = req.body;
-  console.log(startDate);
 
   type weeklyStats = {
     weeklySales: number;

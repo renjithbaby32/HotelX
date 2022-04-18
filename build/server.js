@@ -10,6 +10,7 @@ const cors_1 = __importDefault(require("cors"));
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
+const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const hotel_routes_1 = __importDefault(require("./routes/hotel.routes"));
 const hotelOwner_routes_1 = __importDefault(require("./routes/hotelOwner.routes"));
 const booking_routes_1 = __importDefault(require("./routes/booking.routes"));
@@ -35,9 +36,11 @@ app.use(`${baseAPI}/user`, user_routes_1.default);
 app.use(`${baseAPI}/hotel-owner`, hotelOwner_routes_1.default);
 app.use(`${baseAPI}/hotel`, hotel_routes_1.default);
 app.use(`${baseAPI}/booking`, booking_routes_1.default);
+app.use(`${baseAPI}/admin`, admin_routes_1.default);
+app.use(errorMiddleWare_1.notFound);
+app.use(errorMiddleWare_1.errorHandler);
 const dirname = path_1.default.resolve();
 if (process.env.NODE_ENV === 'production') {
-    console.log(path_1.default.join(dirname, '/frontend/build'));
     app.use(express_1.default.static(path_1.default.join(dirname, '/frontend/build')));
     app.get('*', (req, res, next) => res.sendFile('index.html', { root: '/frontend/build' }, (err) => {
         if (err) {
@@ -50,8 +53,6 @@ else {
         res.send('API is running....');
     });
 }
-app.use(errorMiddleWare_1.notFound);
-app.use(errorMiddleWare_1.errorHandler);
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });

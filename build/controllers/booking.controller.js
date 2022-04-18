@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.payWithRazorpay = exports.getCheckOutDetailsOfTheDay = exports.getCheckInDetailsOfTheDay = exports.getBookingDetails = exports.bookRooms = exports.checkAvailability = void 0;
+exports.payWithRazorpay = exports.getCheckOutDetailsOfTheDay = exports.getCheckInDetailsOfTheDay = exports.getBookingDetails = exports.bookRooms = exports.checkAvailabilityMain = exports.checkAvailability = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const hotel_model_1 = __importDefault(require("../models/hotel.model"));
 const booking_model_1 = __importDefault(require("../models/booking.model"));
@@ -60,6 +60,53 @@ exports.checkAvailability = (0, express_async_handler_1.default)((req, res) => _
         maxAvailabilityOfBudgetRooms,
         maxAvailabilityOfPremiumRooms,
     });
+}));
+/**
+ * @api {post} /api/v1/booking/availability
+ * @apiName MainHotelAvailability
+ * Finds if there is an availability for the given dates in every hotels
+ */
+exports.checkAvailabilityMain = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate, numberOfDays, numberOfRooms } = req.body;
+    const hotels = yield hotel_model_1.default.find();
+    const result = [];
+    hotels.forEach((hotel) => __awaiter(void 0, void 0, void 0, function* () {
+        let maxAvailabilityOfBudgetRooms = Number.MAX_VALUE;
+        let maxAvailabilityOfPremiumRooms = Number.MAX_VALUE;
+        for (let i = 0; i < numberOfDays; i++) {
+            const day = (0, date_fns_1.addDays)((0, date_fns_1.parseISO)(startDate), i);
+            let found = false;
+            let index = 0;
+            for (let i = 0; i < hotel.availability.length; i++) {
+                if ((0, date_fns_1.isSameDay)(hotel.availability[i].date, day)) {
+                    found = true;
+                    index = i;
+                    break;
+                }
+            }
+            if (found) {
+                maxAvailabilityOfBudgetRooms = Math.min(maxAvailabilityOfBudgetRooms, hotel.availability[index].numberOfBudgetRoomsAvailable);
+                maxAvailabilityOfPremiumRooms = Math.min(maxAvailabilityOfPremiumRooms, hotel.availability[index].numberOfPremiumRoomsAvailable);
+            }
+            else {
+                hotel.availability.push({
+                    date: day,
+                    numberOfBudgetRoomsAvailable: hotel.numberOfBudgetRooms,
+                    numberOfPremiumRoomsAvailable: hotel.numberOfPremiumRooms,
+                });
+                yield hotel.save();
+                maxAvailabilityOfBudgetRooms = Math.min(maxAvailabilityOfBudgetRooms, hotel.availability[hotel.availability.length - 1]
+                    .numberOfBudgetRoomsAvailable);
+                maxAvailabilityOfPremiumRooms = Math.min(maxAvailabilityOfPremiumRooms, hotel.availability[hotel.availability.length - 1]
+                    .numberOfPremiumRoomsAvailable);
+            }
+        }
+        if (maxAvailabilityOfBudgetRooms >= numberOfRooms ||
+            maxAvailabilityOfPremiumRooms >= numberOfRooms) {
+            result.push(hotel);
+        }
+    }));
+    res.status(200).json(result);
 }));
 /**
  * @api {post} /api/v1/booking/book/:hotelid

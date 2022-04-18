@@ -8,6 +8,7 @@ const booking_controller_1 = require("../controllers/booking.controller");
 const authMiddleware_1 = require("../middleware/authMiddleware");
 const router = express_1.default.Router();
 router.route('/availability/:hotelid').post(booking_controller_1.checkAvailability);
+router.route('/availability').post(booking_controller_1.checkAvailabilityMain);
 router.route('/book/:hotelid').post(authMiddleware_1.userProtectedRoute, booking_controller_1.bookRooms);
 router.route('/:hotelid').get(authMiddleware_1.userProtectedRoute, booking_controller_1.getBookingDetails);
 router
