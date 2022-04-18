@@ -48,9 +48,6 @@ app.use(`${baseAPI}/hotel`, hotelRouter);
 app.use(`${baseAPI}/booking`, bookingRouter);
 app.use(`${baseAPI}/admin`, adminRouter);
 
-app.use(notFound);
-app.use(errorHandler);
-
 const dirname = path.resolve();
 
 if (process.env.NODE_ENV === 'production') {
@@ -68,6 +65,9 @@ if (process.env.NODE_ENV === 'production') {
     res.send('API is running....');
   });
 }
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
