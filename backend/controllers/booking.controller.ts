@@ -84,6 +84,72 @@ export const checkAvailability = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @api {post} /api/v1/booking/availability
+ * @apiName MainHotelAvailability
+ * Finds if there is an availability for the given dates in every hotels
+ */
+
+export const checkAvailabilityMain = asyncHandler(async (req, res) => {
+  const { startDate, endDate, numberOfDays, numberOfRooms } = req.body;
+  const hotels = await Hotel.find();
+  const result: any = [];
+
+  hotels.forEach(async (hotel) => {
+    let maxAvailabilityOfBudgetRooms = Number.MAX_VALUE;
+    let maxAvailabilityOfPremiumRooms = Number.MAX_VALUE;
+    for (let i = 0; i < numberOfDays; i++) {
+      const day = addDays(parseISO(startDate), i);
+
+      let found = false;
+      let index = 0;
+      for (let i = 0; i < hotel.availability.length; i++) {
+        if (isSameDay(hotel.availability[i].date, day)) {
+          found = true;
+          index = i;
+          break;
+        }
+      }
+
+      if (found) {
+        maxAvailabilityOfBudgetRooms = Math.min(
+          maxAvailabilityOfBudgetRooms,
+          hotel.availability[index].numberOfBudgetRoomsAvailable
+        );
+        maxAvailabilityOfPremiumRooms = Math.min(
+          maxAvailabilityOfPremiumRooms,
+          hotel.availability[index].numberOfPremiumRoomsAvailable
+        );
+      } else {
+        hotel.availability.push({
+          date: day,
+          numberOfBudgetRoomsAvailable: hotel.numberOfBudgetRooms,
+          numberOfPremiumRoomsAvailable: hotel.numberOfPremiumRooms,
+        });
+        await hotel.save();
+        maxAvailabilityOfBudgetRooms = Math.min(
+          maxAvailabilityOfBudgetRooms,
+          hotel.availability[hotel.availability.length - 1]
+            .numberOfBudgetRoomsAvailable
+        );
+        maxAvailabilityOfPremiumRooms = Math.min(
+          maxAvailabilityOfPremiumRooms,
+          hotel.availability[hotel.availability.length - 1]
+            .numberOfPremiumRoomsAvailable
+        );
+      }
+    }
+    if (
+      maxAvailabilityOfBudgetRooms >= numberOfRooms ||
+      maxAvailabilityOfPremiumRooms >= numberOfRooms
+    ) {
+      result.push(hotel);
+    }
+  });
+
+  res.status(200).json(result);
+});
+
+/**
  * @api {post} /api/v1/booking/book/:hotelid
  * @apiName BookHotel
  * Reserves the hotel for the given dates.

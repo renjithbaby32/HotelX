@@ -25,10 +25,15 @@ import ReactImageMagnify from 'react-image-magnify';
 import { Message } from '../components/Message';
 
 const HotelDetailsScreen = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedEndDate, setSelectedEndDate] = useState(
-    addDays(new Date(), 1)
+  const { dates } = useSelector((state) => state.booking);
+
+  const [selectedDate, setSelectedDate] = useState(
+    dates ? dates.startDate : new Date()
   );
+  const [selectedEndDate, setSelectedEndDate] = useState(
+    dates ? dates.endDate : addDays(new Date(), 1)
+  );
+
   const [mainImage, setMainImage] = useState();
   const [numberOfBudgetRooms, setNumberOfBudgetRooms] = useState(1);
   const [numberOfPremiumRooms, setNumberOfPremiumRooms] = useState(0);

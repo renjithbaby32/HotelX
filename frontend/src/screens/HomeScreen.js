@@ -6,11 +6,13 @@ import { HotelCard } from '../components/HotelCard';
 import { Row, Col } from 'react-bootstrap';
 import { useIdentity } from '../utils/identity';
 import { useNavigate } from 'react-router-dom';
+import { CheckAvailability } from '../components/CheckAvailability';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { hotels, nearbyHotels } = useSelector((state) => state.hotel);
+  const { totalAvailability } = useSelector((state) => state.booking);
   const { hotelOwner } = useIdentity();
 
   useEffect(() => {
@@ -43,29 +45,47 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <>
-      <h1>Nearby hotels (within 100km)</h1>
-      <Row>
-        {nearbyHotels.map((hotel) => {
-          return (
-            <Col key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
-              <HotelCard hotel={hotel} />
-            </Col>
-          );
-        })}
-      </Row>
+    <div>
+      <CheckAvailability />
+      {totalAvailability ? (
+        <>
+          <h1>Hotels available on given dates</h1>
+          <Row>
+            {totalAvailability.map((hotel) => {
+              return (
+                <Col key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
+                  <HotelCard hotel={hotel} />
+                </Col>
+              );
+            })}
+          </Row>
+        </>
+      ) : (
+        <>
+          <h1>Nearby hotels (within 100km)</h1>
+          <Row>
+            {nearbyHotels.map((hotel) => {
+              return (
+                <Col key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
+                  <HotelCard hotel={hotel} />
+                </Col>
+              );
+            })}
+          </Row>
 
-      <h1>All hotels</h1>
-      <Row>
-        {hotels.map((hotel) => {
-          return (
-            <Col key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
-              <HotelCard hotel={hotel} />
-            </Col>
-          );
-        })}
-      </Row>
-    </>
+          <h1>All hotels</h1>
+          <Row>
+            {hotels.map((hotel) => {
+              return (
+                <Col key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
+                  <HotelCard hotel={hotel} />
+                </Col>
+              );
+            })}
+          </Row>
+        </>
+      )}
+    </div>
   );
 };
 

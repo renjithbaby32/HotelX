@@ -1,5 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
+import { authAdmin, registerAdmin } from '../controllers/admin.controller';
 
-const Router = express.Router();
+const router = express.Router();
 
-export default Router;
+router.route('/signin').post(authAdmin);
+router.route('/signup').post(registerAdmin);
+
+export default router;

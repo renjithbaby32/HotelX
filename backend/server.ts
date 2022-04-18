@@ -46,6 +46,7 @@ app.use(`${baseAPI}/user`, userRouter);
 app.use(`${baseAPI}/hotel-owner`, hotelOwnerRouter);
 app.use(`${baseAPI}/hotel`, hotelRouter);
 app.use(`${baseAPI}/booking`, bookingRouter);
+app.use(`${baseAPI}/admin`, adminRouter);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -53,7 +54,6 @@ app.use(errorHandler);
 const dirname = path.resolve();
 
 if (process.env.NODE_ENV === 'production') {
-  console.log(path.join(dirname, '/frontend/build'));
   app.use(express.static(path.join(dirname, '/frontend/build')));
 
   app.get('*', (req, res, next) =>

@@ -5,7 +5,25 @@ import { useSelector } from 'react-redux';
 const initialState = {
   availability: null,
   bookingDetails: null,
+  totalAvailability: null,
+  dates: null,
 };
+
+export const getAvailabilityMain = createAsyncThunk(
+  'booking/getAvailabilityMain',
+  async ({ startDate, endDate, numberOfDays, numberOfRooms }) => {
+    const { data } = await axios.post(
+      `http://localhost:5000/api/v1/booking/availability`,
+      {
+        startDate,
+        endDate,
+        numberOfDays,
+        numberOfRooms,
+      }
+    );
+    return data;
+  }
+);
 
 export const getAvailability = createAsyncThunk(
   'booking/getAvailability',
@@ -83,6 +101,12 @@ const bookingSlice = createSlice({
     clearAvailalbility: (state) => {
       state.availability = null;
     },
+    setDates: (state, { payload }) => {
+      state.dates = {
+        startDate: payload.checkIn,
+        endDate: payload.checkOut,
+      };
+    },
   },
   extraReducers: {
     [getAvailability.pending]: () => {
@@ -90,6 +114,9 @@ const bookingSlice = createSlice({
     },
     [getAvailability.fulfilled]: (state, { payload }) => {
       return { ...state, availability: payload };
+    },
+    [getAvailabilityMain.fulfilled]: (state, { payload }) => {
+      return { ...state, totalAvailability: payload };
     },
     [bookRooms.pending]: () => {
       console.log('book rooms loading');
@@ -110,4 +137,5 @@ const bookingSlice = createSlice({
 });
 
 export default bookingSlice.reducer;
-export const { clearBookingDetails, clearAvailalbility } = bookingSlice.actions;
+export const { clearBookingDetails, clearAvailalbility, setDates } =
+  bookingSlice.actions;

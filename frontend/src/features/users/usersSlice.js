@@ -50,7 +50,7 @@ export const getBookings = createAsyncThunk(
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reduxcers: {
+  reducers: {
     setUser: (state) => {
       state.user = JSON.parse(localStorage.getItem('user'));
     },

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { userLogin } from '../features/users/usersSlice';
 import { useNavigate } from 'react-router-dom';
 import {
   Typography,
@@ -12,13 +11,12 @@ import {
   Grid,
   CssBaseline,
   Avatar,
-  FormControlLabel,
-  Checkbox,
   Alert,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Formik, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { adminLogin } from '../features/admin/adminSlice';
 
 function Copyright(props) {
   return (
@@ -38,30 +36,27 @@ function Copyright(props) {
   );
 }
 
-export const UserLogin = () => {
-  const [searchParams] = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/';
-
+export const AdminLoginScreen = () => {
   const dispatch = useDispatch();
 
-  const { user, loginError, loginErrorMessage } = useSelector(
-    (state) => state.user
+  const { admin, loginError, loginErrorMessage } = useSelector(
+    (state) => state.admin
   );
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate(redirect);
+    if (admin) {
+      navigate('/admin');
     }
-  }, [user]);
+  }, [admin]);
 
   const initialValues = {
     email: '',
     password: '',
   };
   const onSubmit = ({ email, password }) => {
-    dispatch(userLogin({ email, password }));
+    dispatch(adminLogin({ email, password }));
   };
   const validationSchema = Yup.object({
     email: Yup.string().email('Invalid e-mail'),
@@ -101,7 +96,7 @@ export const UserLogin = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Sign in to Admin Account
           </Typography>
           <Box sx={{ mt: 1 }}>
             {loginError && <Alert severity="error">{loginErrorMessage}</Alert>}
@@ -160,21 +155,6 @@ export const UserLogin = () => {
                 </Form>
               )}
             </Formik>
-            <Grid container flexDirection={'column'}>
-              <Grid item xs>
-                <Link
-                  onClick={() => localStorage.removeItem('user')}
-                  to={'/hotel-owner-login'}
-                >
-                  Login to hotel owner account
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link to="/register" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
             <Copyright sx={{ mt: 5 }} />
           </Box>
         </Box>

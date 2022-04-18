@@ -6,6 +6,7 @@ import {
   payWithRazorpay,
   getCheckInDetailsOfTheDay,
   getCheckOutDetailsOfTheDay,
+  checkAvailabilityMain,
 } from '../controllers/booking.controller';
 import {
   userProtectedRoute,
@@ -15,6 +16,7 @@ import {
 const router = express.Router();
 
 router.route('/availability/:hotelid').post(checkAvailability);
+router.route('/availability').post(checkAvailabilityMain);
 router.route('/book/:hotelid').post(userProtectedRoute, bookRooms);
 router.route('/:hotelid').get(userProtectedRoute, getBookingDetails);
 router
