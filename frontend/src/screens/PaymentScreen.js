@@ -44,7 +44,7 @@ export const PaymentScreen = () => {
         }
 
         const { data } = await axios.post(
-          `http://localhost:5000/api/v1/booking/payment/razorpay`,
+          `/api/v1/booking/payment/razorpay`,
           { booking },
           {
             headers: {

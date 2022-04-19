@@ -12,15 +12,12 @@ const initialState = {
 export const getAvailabilityMain = createAsyncThunk(
   'booking/getAvailabilityMain',
   async ({ startDate, endDate, numberOfDays, numberOfRooms }) => {
-    const { data } = await axios.post(
-      `http://localhost:5000/api/v1/booking/availability`,
-      {
-        startDate,
-        endDate,
-        numberOfDays,
-        numberOfRooms,
-      }
-    );
+    const { data } = await axios.post(`/api/v1/booking/availability`, {
+      startDate,
+      endDate,
+      numberOfDays,
+      numberOfRooms,
+    });
     return data;
   }
 );
@@ -29,7 +26,7 @@ export const getAvailability = createAsyncThunk(
   'booking/getAvailability',
   async ({ hotelid, startDate, endDate, numberOfDays }) => {
     const { data } = await axios.post(
-      `http://localhost:5000/api/v1/booking/availability/${hotelid}`,
+      `/api/v1/booking/availability/${hotelid}`,
       {
         startDate,
         endDate,
@@ -59,7 +56,7 @@ export const bookRooms = createAsyncThunk(
       },
     };
     const { data } = await axios.post(
-      `http://localhost:5000/api/v1/booking/book/${hotelid}`,
+      `/api/v1/booking/book/${hotelid}`,
       {
         startDate,
         endDate,
@@ -83,10 +80,7 @@ export const getBookingDetails = createAsyncThunk(
         Authorization: `Bearer ${user.token}`,
       },
     };
-    const { data } = await axios.get(
-      `http://localhost:5000/api/v1/booking/${bookingid}`,
-      config
-    );
+    const { data } = await axios.get(`/api/v1/booking/${bookingid}`, config);
     return data;
   }
 );

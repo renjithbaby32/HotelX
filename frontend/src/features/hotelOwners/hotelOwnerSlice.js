@@ -14,10 +14,10 @@ const initialState = {
 export const hotelOwnerLogin = createAsyncThunk(
   'hotelOwners/hotelOwnerLogin',
   async ({ email, password }) => {
-    const { data } = await axios.post(
-      'http://localhost:5000/api/v1/hotel-owner/signin',
-      { email, password }
-    );
+    const { data } = await axios.post('/api/v1/hotel-owner/signin', {
+      email,
+      password,
+    });
     return data;
   }
 );
@@ -25,10 +25,12 @@ export const hotelOwnerLogin = createAsyncThunk(
 export const hotelOwnerRegister = createAsyncThunk(
   'hotelOwners/hotelOwnerRegister',
   async ({ name, phone, email, password }) => {
-    const { data } = await axios.post(
-      'http://localhost:5000/api/v1/hotel-owner/signup',
-      { name, phone, email, password }
-    );
+    const { data } = await axios.post('/api/v1/hotel-owner/signup', {
+      name,
+      phone,
+      email,
+      password,
+    });
     return data;
   }
 );
@@ -36,9 +38,7 @@ export const hotelOwnerRegister = createAsyncThunk(
 export const sendOTP = createAsyncThunk(
   'hotelOwners/sendOTP',
   async (phone) => {
-    const { data } = await axios.post(
-      `http://localhost:5000/api/v1/hotel-owner/sendOTP/${phone}`
-    );
+    const { data } = await axios.post(`/api/v1/hotel-owner/sendOTP/${phone}`);
     return data;
   }
 );
@@ -47,7 +47,7 @@ export const verifyOTP = createAsyncThunk(
   'hotelOwners/verifyOTP',
   async ({ phone, code }) => {
     const { data } = await axios.post(
-      `http://localhost:5000/api/v1/hotel-owner/verifyOTP/${phone}`,
+      `/api/v1/hotel-owner/verifyOTP/${phone}`,
       { code }
     );
     return data;
@@ -58,7 +58,7 @@ export const getUpComingBookings = createAsyncThunk(
   'hotelOwners/getUpComingBookings',
   async ({ startDate, endDate, hotelId, hotelOwner }) => {
     const { data } = await axios.post(
-      `http://localhost:5000/api/v1/hotel-owner/upcoming-bookings`,
+      `/api/v1/hotel-owner/upcoming-bookings`,
       { startDate, endDate, hotelId },
       {
         headers: {
@@ -74,7 +74,7 @@ export const getCheckInDetailsOfTheDay = createAsyncThunk(
   'hotelOwners/getBookingDetailsOfTheDay',
   async ({ hotelid, checkInDate, hotelOwner }) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/booking/checkin/${hotelid}?checkInDate=${checkInDate}`,
+      `/api/v1/booking/checkin/${hotelid}?checkInDate=${checkInDate}`,
       {
         headers: {
           Authorization: `Bearer ${hotelOwner.token}`,
@@ -89,7 +89,7 @@ export const getCheckOutDetailsOfTheDay = createAsyncThunk(
   'hotelOwners/getCheckOutDetailsOfTheDay',
   async ({ hotelid, checkInDate: checkOutDate, hotelOwner }) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/booking/checkout/${hotelid}?checkOutDate=${checkOutDate}`,
+      `/api/v1/booking/checkout/${hotelid}?checkOutDate=${checkOutDate}`,
       {
         headers: {
           Authorization: `Bearer ${hotelOwner.token}`,
@@ -104,7 +104,7 @@ export const getHotels = createAsyncThunk(
   'hotelOwners/getHotels',
   async (hotelOwner) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/hotel-owner/gethotels/${hotelOwner._id}`,
+      `/api/v1/hotel-owner/gethotels/${hotelOwner._id}`,
       {
         headers: {
           Authorization: `Bearer ${hotelOwner.token}`,

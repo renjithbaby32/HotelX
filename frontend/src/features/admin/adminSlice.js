@@ -17,10 +17,10 @@ export const adminLogin = createAsyncThunk(
   'users/adminLogin',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(
-        'http://localhost:5000/api/v1/admin/signin',
-        { email, password }
-      );
+      const { data } = await axios.post('/api/v1/admin/signin', {
+        email,
+        password,
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -36,10 +36,9 @@ export const getWeeklyStats = createAsyncThunk(
   'users/getWeeklyStats',
   async (startDate, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(
-        'http://localhost:5000/api/v1/admin/weekly-stats',
-        { startDate }
-      );
+      const { data } = await axios.post('/api/v1/admin/weekly-stats', {
+        startDate,
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -55,9 +54,7 @@ export const getMonthlyStats = createAsyncThunk(
   'users/getMonthlyStats',
   async (undefined, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(
-        'http://localhost:5000/api/v1/admin/monthly-stats'
-      );
+      const { data } = await axios.get('/api/v1/admin/monthly-stats');
       return data;
     } catch (error) {
       throw rejectWithValue(

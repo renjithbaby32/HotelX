@@ -11,10 +11,10 @@ export const userLogin = createAsyncThunk(
   'users/userLogin',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(
-        'http://localhost:5000/api/v1/user/signin',
-        { email, password }
-      );
+      const { data } = await axios.post('/api/v1/user/signin', {
+        email,
+        password,
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -29,10 +29,12 @@ export const userLogin = createAsyncThunk(
 export const userRegister = createAsyncThunk(
   'users/userRegister',
   async ({ name, phone, email, password }) => {
-    const { data } = await axios.post(
-      'http://localhost:5000/api/v1/user/signup',
-      { name, phone, email, password }
-    );
+    const { data } = await axios.post('/api/v1/user/signup', {
+      name,
+      phone,
+      email,
+      password,
+    });
     return data;
   }
 );
@@ -40,9 +42,7 @@ export const userRegister = createAsyncThunk(
 export const getBookings = createAsyncThunk(
   'users/getBookings',
   async (userId) => {
-    const { data } = await axios.get(
-      `http://localhost:5000/api/v1/user/bookings/${userId}`
-    );
+    const { data } = await axios.get(`/api/v1/user/bookings/${userId}`);
     return data;
   }
 );
