@@ -11,6 +11,10 @@ const initialState = {
   totalRoomsBooked: null,
   budgetRoomsBooked: null,
   premiumRoomsBooked: null,
+  amountPaid: null,
+  amountPending: null,
+  users: null,
+  hotels: null,
 };
 
 export const adminLogin = createAsyncThunk(
@@ -66,6 +70,54 @@ export const getMonthlyStats = createAsyncThunk(
   }
 );
 
+export const getSettlementStats = createAsyncThunk(
+  'users/getSettlementStats',
+  async (undefined, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get('/api/v1/admin/settlement-stats');
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const getUserList = createAsyncThunk(
+  'users/getUserList',
+  async (undefined, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get('/api/v1/admin/userlist');
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const getHotels = createAsyncThunk(
+  'users/getHotels',
+  async (undefined, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get('/api/v1/admin/hotelslist');
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
 const adminSlice = createSlice({
   name: 'admin',
   initialState,
@@ -95,6 +147,25 @@ const adminSlice = createSlice({
         totalRoomsBooked: payload.totalRoomsBooked,
         budgetRoomsBooked: payload.budgetRoomsBooked,
         premiumRoomsBooked: payload.premiumRoomsBooked,
+      };
+    },
+    [getSettlementStats.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        amountPaid: payload.amountPaid,
+        amountPending: payload.amountPending,
+      };
+    },
+    [getUserList.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        users: payload,
+      };
+    },
+    [getHotels.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        hotels: payload,
       };
     },
   },

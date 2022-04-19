@@ -1,10 +1,10 @@
 import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken';
 import Admin from '../models/admin.model';
-import User from '../models/admin.model';
+import User from '../models/user.model';
 import Booking from '../models/booking.model';
 import Hotel from '../models/hotel.model';
-import { addMonths, subYears } from 'date-fns';
+import { addMonths, subYears, subMonths } from 'date-fns';
 
 /**
  * @api {post} /api/v1/admin/signin
@@ -159,4 +159,53 @@ export const getYearlyStats = asyncHandler(async (req, res) => {
   }
 
   res.json(monthlyStats);
+});
+
+/**
+ * @api {get} /api/v1/admin/settlement-stats
+ * @apiName SettlementStatsOfTheMonth
+ */
+export const getSettlementStatus = asyncHandler(async (req, res) => {
+  const monthlyBookings = await Booking.find({
+    createdAt: {
+      $gte: subMonths(new Date(), 1),
+    },
+  });
+
+  let amountPaid = 0;
+  let amountPending = 0;
+  monthlyBookings.forEach((booking) => {
+    if (booking.amountPaid === 0) {
+      amountPending += booking.amount;
+    } else {
+      amountPaid += booking.amount;
+    }
+  });
+
+  res.json({
+    amountPaid,
+    amountPending,
+  });
+});
+
+/**
+ * @api {get} /api/v1/admin/userlist
+ * @apiName UserList
+ * Returns the list of all users
+ */
+export const getUserList = asyncHandler(async (req, res) => {
+  const users = await User.find();
+
+  res.status(200).json(users);
+});
+
+/**
+ * @api {get} /api/v1/admin/hotelslist
+ * @apiName HotelList
+ * Returns the list of all hotels
+ */
+export const getHotelsList = asyncHandler(async (req, res) => {
+  const hotels = await Hotel.find();
+
+  res.status(200).json(hotels);
 });

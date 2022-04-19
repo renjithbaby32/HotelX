@@ -16,7 +16,11 @@ import {
 } from '../sections/@dashboard/app';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { getMonthlyStats, getWeeklyStats } from '../features/admin/adminSlice';
+import {
+  getMonthlyStats,
+  getSettlementStats,
+  getWeeklyStats,
+} from '../features/admin/adminSlice';
 import { format, subDays, subMonths } from 'date-fns';
 
 const months = [];
@@ -35,6 +39,8 @@ export const AdminDashBoardScreen = () => {
     totalRoomsBooked,
     budgetRoomsBooked,
     premiumRoomsBooked,
+    amountPaid,
+    amountPending,
   } = useSelector((state) => state.admin);
 
   const theme = useTheme();
@@ -43,6 +49,7 @@ export const AdminDashBoardScreen = () => {
   useEffect(() => {
     dispatch(getWeeklyStats(subDays(new Date(), 7)));
     dispatch(getMonthlyStats());
+    dispatch(getSettlementStats());
   }, []);
 
   return (
@@ -91,6 +98,7 @@ export const AdminDashBoardScreen = () => {
           <Grid item xs={12} md={6} lg={8}>
             <AppWebsiteVisits
               title="Monthly Bookings Trend"
+              subheader="Last 12 months"
               chartLabels={months}
               chartData={[
                 {
@@ -118,9 +126,10 @@ export const AdminDashBoardScreen = () => {
           <Grid item xs={12} md={6} lg={4}>
             <AppCurrentVisits
               title="Settlement status"
+              subheader="Last 30 days"
               chartData={[
-                { label: 'Paid', value: 4344 },
-                { label: 'Pending', value: 5435 },
+                { label: 'Paid', value: amountPaid ? amountPaid : 0 },
+                { label: 'Pending', value: amountPending ? amountPending : 0 },
               ]}
               chartColors={[
                 theme.palette.primary.main,

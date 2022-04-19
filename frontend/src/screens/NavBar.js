@@ -4,27 +4,40 @@ import PersonIcon from '@mui/icons-material/Person';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser } from '../features/users/usersSlice';
 import { clearHotelOwner } from '../features/hotelOwners/hotelOwnerSlice';
+import { useLocation } from 'react-router-dom';
+
+const navbarException = [
+  '/login',
+  '/register',
+  '/hotel-owner-login',
+  '/hotel-owner-register',
+  '/admin-login',
+  '/admin',
+];
 
 export const NavBar = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { hotelOwner } = useSelector((state) => state.hotelOwner);
+  const { pathname } = useLocation();
 
   return (
-    <header>
-      <Navbar
-        variant="dark"
-        style={{ backgroundColor: '#000000' }}
-        expand="lg"
-        collapseOnSelect
-      >
-        <Container>
-          <LinkContainer to="/">
-            <Navbar.Brand>HotelX</Navbar.Brand>
-          </LinkContainer>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            {/* <Nav className="first-nav">
+    <>
+      {navbarException.includes(pathname) ? null : (
+        <header>
+          <Navbar
+            variant="dark"
+            style={{ backgroundColor: '#000000' }}
+            expand="lg"
+            collapseOnSelect
+          >
+            <Container>
+              <LinkContainer to="/">
+                <Navbar.Brand>HotelX</Navbar.Brand>
+              </LinkContainer>
+              <Navbar.Toggle aria-controls="basic-navbar-nav" />
+              <Navbar.Collapse id="basic-navbar-nav">
+                {/* <Nav className="first-nav">
               <LinkContainer
                 className="px-3"
                 style={{ color: 'white' }}
@@ -47,62 +60,66 @@ export const NavBar = () => {
                 <Nav.Link>Everything else</Nav.Link>
               </LinkContainer>
             </Nav> */}
-            <Nav className="ml-auto">
-              {/* <SearchBox /> */}
+                <Nav className="ml-auto">
+                  {/* <SearchBox /> */}
 
-              {user ? (
-                <NavDropdown
-                  className="px-3"
-                  title={<span style={{ color: 'white' }}>{user.name}</span>}
-                  id="username"
-                >
-                  <LinkContainer to="/profile">
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to={`/bookings/${user._id}`}>
-                    <NavDropdown.Item>Bookings</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to="/login">
-                    <NavDropdown.Item
-                      onClick={() => {
-                        dispatch(clearUser());
-                        localStorage.removeItem('user');
-                      }}
+                  {user ? (
+                    <NavDropdown
+                      className="px-3"
+                      title={
+                        <span style={{ color: 'white' }}>{user.name}</span>
+                      }
+                      id="username"
                     >
-                      Logout
-                    </NavDropdown.Item>
-                  </LinkContainer>
-                </NavDropdown>
-              ) : hotelOwner ? (
-                <NavDropdown
-                  className="px-3"
-                  title={
-                    <span style={{ color: 'white' }}>{hotelOwner.name}</span>
-                  }
-                  id="username"
-                >
-                  <LinkContainer to="/profile">
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
-                  </LinkContainer>
-                  <LinkContainer to="/login">
-                    <NavDropdown.Item
-                      onClick={() => {
-                        dispatch(clearHotelOwner());
-                        localStorage.removeItem('hotelOwner');
-                      }}
+                      <LinkContainer to="/profile">
+                        <NavDropdown.Item>Profile</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to={`/bookings/${user._id}`}>
+                        <NavDropdown.Item>Bookings</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/login">
+                        <NavDropdown.Item
+                          onClick={() => {
+                            dispatch(clearUser());
+                            localStorage.removeItem('user');
+                          }}
+                        >
+                          Logout
+                        </NavDropdown.Item>
+                      </LinkContainer>
+                    </NavDropdown>
+                  ) : hotelOwner ? (
+                    <NavDropdown
+                      className="px-3"
+                      title={
+                        <span style={{ color: 'white' }}>
+                          {hotelOwner.name}
+                        </span>
+                      }
+                      id="username"
                     >
-                      Logout
-                    </NavDropdown.Item>
-                  </LinkContainer>
-                </NavDropdown>
-              ) : (
-                <LinkContainer style={{ color: 'white' }} to="/login">
-                  <Nav.Link>
-                    <PersonIcon size={'small'}></PersonIcon> Sign In
-                  </Nav.Link>
-                </LinkContainer>
-              )}
-              {/* {userInfo && userInfo.isAdmin && (
+                      <LinkContainer to="/profile">
+                        <NavDropdown.Item>Profile</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/login">
+                        <NavDropdown.Item
+                          onClick={() => {
+                            dispatch(clearHotelOwner());
+                            localStorage.removeItem('hotelOwner');
+                          }}
+                        >
+                          Logout
+                        </NavDropdown.Item>
+                      </LinkContainer>
+                    </NavDropdown>
+                  ) : (
+                    <LinkContainer style={{ color: 'white' }} to="/login">
+                      <Nav.Link>
+                        <PersonIcon size={'small'}></PersonIcon> Sign In
+                      </Nav.Link>
+                    </LinkContainer>
+                  )}
+                  {/* {userInfo && userInfo.isAdmin && (
                 <NavDropdown
                   title={
                     <span style={{ color: 'white', paddingLeft: '1rem' }}>
@@ -137,10 +154,12 @@ export const NavBar = () => {
                   </LinkContainer>
                 </NavDropdown>
               )} */}
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </header>
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+        </header>
+      )}
+    </>
   );
 };
