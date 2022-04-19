@@ -16,26 +16,18 @@ export const addHotel = createAsyncThunk(
       },
     };
 
-    const { data } = await axios.post(
-      'http://localhost:5000/api/v1/hotel/register',
-      hotelDetails,
-      config
-    );
+    const { data } = await axios.post('/hotel/register', hotelDetails, config);
     return data;
   }
 );
 
 export const getHotels = createAsyncThunk('hotels/getHotels', async () => {
-  const { data } = await axios.get(
-    'http://localhost:5000/api/v1/hotel/gethotels'
-  );
+  const { data } = await axios.get('/hotel/gethotels');
   return data;
 });
 
 export const getHotel = createAsyncThunk('hotels/getHotel', async (hotelId) => {
-  const { data } = await axios.get(
-    `http://localhost:5000/api/v1/hotel/${hotelId}`
-  );
+  const { data } = await axios.get(`/hotel/${hotelId}`);
   return data;
 });
 
@@ -43,7 +35,7 @@ export const getNearbyHotels = createAsyncThunk(
   'hotels/get-nearby-hotels',
   async ({ latitude, longitude }) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/hotel/get-nearby-hotels/?latitude=${latitude}&longitude=${longitude}`
+      `/hotel/get-nearby-hotels/?latitude=${latitude}&longitude=${longitude}`
     );
     return data;
   }
