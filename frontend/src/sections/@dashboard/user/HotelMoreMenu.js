@@ -9,9 +9,9 @@ import {
 } from '@mui/material';
 import Iconify from '../../../components/Iconify';
 import { useDispatch } from 'react-redux';
-import { blockOrUnblockUser } from '../../../features/admin/adminSlice';
+import { blockOrUnblockHotel } from '../../../features/admin/adminSlice';
 
-export default function UserMoreMenu({ user }) {
+export default function HotelMoreMenu({ hotel }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,17 +35,17 @@ export default function UserMoreMenu({ user }) {
       >
         <div
           onClick={() => {
-            dispatch(blockOrUnblockUser(user._id));
+            dispatch(blockOrUnblockHotel(hotel._id));
             setIsOpen(false);
           }}
         >
-          {user.isBlocked ? (
+          {!hotel.isActive ? (
             <MenuItem sx={{ color: 'text.secondary' }}>
               <ListItemIcon>
                 <Iconify icon="eva:edit-fill" width={24} height={24} />
               </ListItemIcon>
               <ListItemText
-                primary="Unblock User"
+                primary="Approve Hotel"
                 primaryTypographyProps={{ variant: 'body2' }}
               />
             </MenuItem>
@@ -59,7 +59,7 @@ export default function UserMoreMenu({ user }) {
                 <Iconify icon="eva:edit-fill" width={24} height={24} />
               </ListItemIcon>
               <ListItemText
-                primary="Block User"
+                primary="Block Hotel"
                 primaryTypographyProps={{ variant: 'body2' }}
               />
             </MenuItem>

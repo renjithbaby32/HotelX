@@ -14,7 +14,6 @@ export const useIdentity = (identity) => {
 
   useEffect(() => {
     if (identity === 'user') {
-      const user = localStorage.getItem('user');
       if (!user) {
         navigate('/login');
       } else {
@@ -22,7 +21,6 @@ export const useIdentity = (identity) => {
         dispatch(setUserAction());
       }
     } else if (identity === 'hotelOwner') {
-      const hotelOwner = localStorage.getItem('hotelOwner');
       if (!hotelOwner) {
         navigate('/hotel-owner-login');
       } else {

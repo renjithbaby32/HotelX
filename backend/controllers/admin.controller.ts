@@ -4,6 +4,7 @@ import Admin from '../models/admin.model';
 import User from '../models/user.model';
 import Booking from '../models/booking.model';
 import Hotel from '../models/hotel.model';
+import HotelOwner from '../models/hotelOwner.model';
 import { addMonths, subYears, subMonths } from 'date-fns';
 
 /**
@@ -205,7 +206,141 @@ export const getUserList = asyncHandler(async (req, res) => {
  * Returns the list of all hotels
  */
 export const getHotelsList = asyncHandler(async (req, res) => {
-  const hotels = await Hotel.find();
-
+  const hotels = await Hotel.find().populate('owner');
   res.status(200).json(hotels);
+});
+
+/**
+ * @api {get} /api/v1/admin/hotel-owners-list
+ * @apiName HotelOwnersList
+ * Returns the list of all hotel owners
+ */
+export const getHotelOwnersList = asyncHandler(async (req, res) => {
+  const hotelOwners = await HotelOwner.find();
+  res.status(200).json(hotelOwners);
+});
+
+/**
+ * @api {post} /api/v1/admin/user/block-unblock/:userId
+ * @apiName BlockOrUnblockUser
+ * Blocks or unblocks a user
+ */
+export const blockOrUnblockUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.userId);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  if (user.isBlocked) {
+    user.isBlocked = false;
+  } else {
+    user.isBlocked = true;
+  }
+  await user.save();
+  res.status(200).json(user);
+});
+
+/**
+ * @api {post} /api/v1/admin/hotel/block-unblock/:hotelId
+ * @apiName BlockOrUnblockHotel
+ * Blocks or unblocks a hotel
+ */
+export const blockOrUnblockHotel = asyncHandler(async (req, res) => {
+  const hotel = await Hotel.findById(req.params.hotelId);
+
+  if (!hotel) {
+    res.status(404);
+    throw new Error('Hotel not found');
+  }
+
+  if (hotel.isActive) {
+    hotel.isActive = false;
+  } else {
+    hotel.isActive = true;
+  }
+  await hotel.save();
+  res.status(200).json(hotel);
+});
+
+/**
+ * @api {post} /api/v1/admin/hotel-owner/block-unblock/:hotelOwnerId
+ * @apiName BlockOrUnblockUser
+ * Blocks or unblocks a hotel owner
+ */
+export const blockOrUnblockHotelOwner = asyncHandler(async (req, res) => {
+  const hotelOwner = await HotelOwner.findById(req.params.hotelOwnerId);
+
+  if (!hotelOwner) {
+    res.status(404);
+    throw new Error('Hotel wwner not found');
+  }
+
+  if (hotelOwner.isBlocked) {
+    hotelOwner.isBlocked = false;
+  } else {
+    hotelOwner.isBlocked = true;
+  }
+  await hotelOwner.save();
+  res.status(200).json(hotelOwner);
+});
+
+/**
+ * @api {post} /api/v1/admin/salesreport
+ * @apiName SalesReport
+ * generates sales report for the given date range
+ */
+export const generateSalesReport = asyncHandler(async (req, res) => {
+  const { startDate, endDate } = req.body;
+  const boookings = await Booking.find({
+    createdAt: {
+      $gte: startDate ? startDate : subMonths(new Date(), 1),
+      $lt: endDate ? endDate : new Date(),
+    },
+  }).populate('hotel');
+
+  type salesReport = {
+    id: string;
+    name: string;
+    totalNumberOfRooms: number;
+    totalAmount: number;
+    paidAmount: number;
+    pendingAmount: number;
+  };
+
+  let salesReport: salesReport[] = [];
+
+  boookings.forEach((booking) => {
+    const name = booking.hotel.name;
+    const numberOfRoomsPaidFor =
+      booking.numberOfBudgetRoomsBooked + booking.numberOfPremiumRoomsBooked;
+    const totalAmount = booking.amount;
+    const paidAmount = booking.amountPaid;
+    const pendingAmount = booking.amount - booking.amountPaid;
+    const salesReportObj = {
+      id: booking._id,
+      name,
+      totalNumberOfRooms: numberOfRoomsPaidFor,
+      numberOfRoomsPaidFor,
+      totalAmount,
+      paidAmount,
+      pendingAmount,
+    };
+
+    let found = false;
+    salesReport.forEach((report) => {
+      if (report.name === name) {
+        report.totalNumberOfRooms += numberOfRoomsPaidFor;
+        report.totalAmount += totalAmount;
+        report.paidAmount += paidAmount;
+        report.pendingAmount += pendingAmount;
+        found = true;
+      }
+    });
+    if (!found) {
+      salesReport.push(salesReportObj);
+    }
+  });
+  res.status(200).json(salesReport);
 });

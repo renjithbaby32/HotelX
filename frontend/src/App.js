@@ -28,7 +28,9 @@ import Dash from './screens/Dash';
 import ThemeProvider from './theme';
 import UserDashboardScreen from './screens/UserDashboardScreen';
 import HotelsDashboardScreen from './screens/HotelsDashboardScreen';
-
+import HotelOwnersDashboardScreen from './screens/HotelOwnersDashboardScreen';
+import { SalesReportScreen } from './screens/SalesReportScreen';
+import Navbar2 from './layouts/dashboard/Navbar2';
 const adminURIS = [
   '/admin',
   '/admin/hotels',
@@ -57,19 +59,22 @@ function App() {
               ></Route>
               <Route
                 path={'/admin/hotel-owners'}
-                element={<AdminDashBoardScreen />}
+                element={<HotelOwnersDashboardScreen />}
               ></Route>
               <Route
                 path={'/admin/sales-report'}
-                element={<AdminDashBoardScreen />}
+                element={<SalesReportScreen />}
               ></Route>
             </Route>
           </Routes>
         </ThemeProvider>
       ) : (
         <Grid className="App">
-          <NavBar />
-          <Container maxWidth="lg">
+          {/* <NavBar /> */}
+          <ThemeProvider>
+            <Navbar2 />
+          </ThemeProvider>
+          <Container maxWidth="lg" sx={{ marginTop: '128px' }}>
             <Routes>
               <Route path={'/'} element={<HomeScreen />}></Route>
               <Route path={'/login'} element={<UserLogin />}></Route>

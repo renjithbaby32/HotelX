@@ -104,6 +104,11 @@ const hotelSchema = new mongoose.Schema(
       max: 10,
       default: 0,
     },
+    isActive: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     availability: [
       {
         date: {

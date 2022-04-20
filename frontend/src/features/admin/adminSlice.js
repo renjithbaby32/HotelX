@@ -15,10 +15,15 @@ const initialState = {
   amountPending: null,
   users: null,
   hotels: null,
+  hotelOwners: null,
+  userBlockedOrUnblocked: false,
+  hotelBlockedOrUnblocked: false,
+  hotelOwnerBlockedOrUnblocked: false,
+  salesReport: null,
 };
 
 export const adminLogin = createAsyncThunk(
-  'users/adminLogin',
+  'admin/adminLogin',
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post('/api/v1/admin/signin', {
@@ -36,8 +41,27 @@ export const adminLogin = createAsyncThunk(
   }
 );
 
+export const getSalesReport = createAsyncThunk(
+  'admin/getSalesReport',
+  async ({ startDate, endDate }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post('/api/v1/admin/salesreport', {
+        startDate,
+        endDate,
+      });
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
 export const getWeeklyStats = createAsyncThunk(
-  'users/getWeeklyStats',
+  'admin/getWeeklyStats',
   async (startDate, { rejectWithValue }) => {
     try {
       const { data } = await axios.post('/api/v1/admin/weekly-stats', {
@@ -55,7 +79,7 @@ export const getWeeklyStats = createAsyncThunk(
 );
 
 export const getMonthlyStats = createAsyncThunk(
-  'users/getMonthlyStats',
+  'admin/getMonthlyStats',
   async (undefined, { rejectWithValue }) => {
     try {
       const { data } = await axios.get('/api/v1/admin/monthly-stats');
@@ -71,7 +95,7 @@ export const getMonthlyStats = createAsyncThunk(
 );
 
 export const getSettlementStats = createAsyncThunk(
-  'users/getSettlementStats',
+  'admin/getSettlementStats',
   async (undefined, { rejectWithValue }) => {
     try {
       const { data } = await axios.get('/api/v1/admin/settlement-stats');
@@ -87,7 +111,7 @@ export const getSettlementStats = createAsyncThunk(
 );
 
 export const getUserList = createAsyncThunk(
-  'users/getUserList',
+  'admin/getUserList',
   async (undefined, { rejectWithValue }) => {
     try {
       const { data } = await axios.get('/api/v1/admin/userlist');
@@ -103,10 +127,80 @@ export const getUserList = createAsyncThunk(
 );
 
 export const getHotels = createAsyncThunk(
-  'users/getHotels',
+  'admin/getHotels',
   async (undefined, { rejectWithValue }) => {
     try {
       const { data } = await axios.get('/api/v1/admin/hotelslist');
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const getHotelOwnersList = createAsyncThunk(
+  'admin/getHotelOwnersList',
+  async (undefined, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get('/api/v1/admin/hotel-owners-list');
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const blockOrUnblockUser = createAsyncThunk(
+  'admin/blockOrUnblockUser',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `/api/v1/admin/user/block-unblock/${userId}`
+      );
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const blockOrUnblockHotel = createAsyncThunk(
+  'admin/blockOrUnblockHotel',
+  async (hotelId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `/api/v1/admin/hotel/block-unblock/${hotelId}`
+      );
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const blockOrUnblockHotelOwner = createAsyncThunk(
+  'admin/blockOrUnblockHotelOwner',
+  async (hotelOwnerId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `/api/v1/admin/hotel-owner/block-unblock/${hotelOwnerId}`
+      );
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -131,6 +225,12 @@ const adminSlice = createSlice({
     },
     [adminLogin.rejected]: (state, { payload }) => {
       return { ...state, loginError: true, loginErrorMessage: payload };
+    },
+    [getSalesReport.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        salesReport: payload,
+      };
     },
     [getWeeklyStats.fulfilled]: (state, { payload }) => {
       return {
@@ -166,6 +266,30 @@ const adminSlice = createSlice({
       return {
         ...state,
         hotels: payload,
+      };
+    },
+    [blockOrUnblockUser.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        userBlockedOrUnblocked: !state.userBlockedOrUnblocked,
+      };
+    },
+    [blockOrUnblockHotel.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        hotelBlockedOrUnblocked: !state.hotelBlockedOrUnblocked,
+      };
+    },
+    [blockOrUnblockHotelOwner.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        hotelOwnerBlockedOrUnblocked: !state.hotelOwnerBlockedOrUnblocked,
+      };
+    },
+    [getHotelOwnersList.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        hotelOwners: payload,
       };
     },
   },

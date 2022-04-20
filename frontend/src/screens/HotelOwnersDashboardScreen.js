@@ -24,10 +24,10 @@ import SearchNotFound from '../components/SearchNotFound';
 import {
   UserListHead,
   UserListToolbar,
-  UserMoreMenu,
+  HotelOwnerMoreMenu,
 } from '../sections/@dashboard/user';
 import USERLIST from '../_mock/user';
-import { getUserList } from '../features/admin/adminSlice';
+import { getHotelOwnersList } from '../features/admin/adminSlice';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
@@ -38,9 +38,9 @@ const TABLE_HEAD = [
 ];
 
 export default function UserDashboardScreen() {
-  const { userBlockedOrUnblocked } = useSelector((state) => state.admin);
-
-  const { users } = useSelector((state) => state.admin);
+  const { hotelOwners, hotelOwnerBlockedOrUnblocked } = useSelector(
+    (state) => state.admin
+  );
   const dispatch = useDispatch();
 
   const [page, setPage] = useState(0);
@@ -98,8 +98,8 @@ export default function UserDashboardScreen() {
   };
 
   useEffect(() => {
-    dispatch(getUserList());
-  }, [userBlockedOrUnblocked]);
+    dispatch(getHotelOwnersList());
+  }, [hotelOwnerBlockedOrUnblocked]);
 
   return (
     <Page title="UserDashboard">
@@ -111,7 +111,7 @@ export default function UserDashboardScreen() {
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Users
+            Hotel Owners
           </Typography>
         </Stack>
 
@@ -133,9 +133,9 @@ export default function UserDashboardScreen() {
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
-                {users && (
+                {hotelOwners && (
                   <TableBody>
-                    {users
+                    {hotelOwners
                       .slice(
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
@@ -191,7 +191,7 @@ export default function UserDashboardScreen() {
                             </TableCell>
 
                             <TableCell align="right">
-                              <UserMoreMenu user={row} />
+                              <HotelOwnerMoreMenu hotelOwner={row} />
                             </TableCell>
                           </TableRow>
                         );
