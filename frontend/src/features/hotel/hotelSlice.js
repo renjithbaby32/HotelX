@@ -5,6 +5,7 @@ const initialState = {
   hotels: [],
   nearbyHotels: [],
   hotel: null,
+  newHotelAdded: false,
 };
 
 export const addHotel = createAsyncThunk(
@@ -17,7 +18,7 @@ export const addHotel = createAsyncThunk(
     };
 
     const { data } = await axios.post(
-      'api/v1/hotel/register',
+      '/api/v1/hotel/register',
       hotelDetails,
       config
     );
@@ -60,6 +61,9 @@ const hotelSlice = createSlice({
     },
     [getHotel.fulfilled]: (state, { payload }) => {
       return { ...state, hotel: payload };
+    },
+    [addHotel.fulfilled]: (state, { payload }) => {
+      return { ...state, newHotelAdded: true };
     },
   },
 });

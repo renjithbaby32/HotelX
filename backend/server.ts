@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { config } from 'dotenv';
 import compression from 'compression';
+import { v2 as cloudinary } from 'cloudinary';
 import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
@@ -10,15 +11,14 @@ import adminRouter from './routes/admin.routes';
 import hotelRouter from './routes/hotel.routes';
 import hotelOwnerRouter from './routes/hotelOwner.routes';
 import bookingRouter from './routes/booking.routes';
-import { cloudinaryConfig } from './config/cloudinary.config';
 import morgan from 'morgan';
-
 import { errorHandler, notFound } from './middleware/errorMiddleWare';
-
 import connectDB from './config/db';
-connectDB();
 
 config();
+
+connectDB();
+
 const upload = multer();
 
 let PORT = (process.env.PORT as string) || '5000';
@@ -42,6 +42,12 @@ app.use(
     threshold: 1024 * 10,
   })
 );
+
+const cloudinaryConfig = cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 app.use(upload.array('images', 5));
 

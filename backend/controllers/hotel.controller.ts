@@ -1,7 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Hotel from '../models/hotel.model';
 import cloudinary from 'cloudinary';
-import { cloudinaryConfig } from '../config/cloudinary.config';
 
 /**
  * @api {post} /api/v1/hotel/register

@@ -28,6 +28,29 @@ const adminSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    notifications: [
+        {
+            createdAt: {
+                type: Date,
+                default: Date.now,
+            },
+            title: {
+                type: String,
+                required: true,
+            },
+            description: {
+                type: String,
+                required: true,
+            },
+            avatar: {
+                type: String,
+            },
+            isUnread: {
+                type: Boolean,
+                default: true,
+            },
+        },
+    ],
 }, {
     timestamps: true,
 });

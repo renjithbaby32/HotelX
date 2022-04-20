@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form as FormikForm, ErrorMessage } from 'formik';
 import { Button } from '@mui/material';
@@ -9,6 +9,7 @@ import * as Yup from 'yup';
 import { addHotel } from '../features/hotel/hotelSlice';
 import axios from 'axios';
 import { useIdentity } from '../utils/identity';
+import { addNotification } from '../features/admin/adminSlice';
 
 const initialValues = {
   name: '',
@@ -50,8 +51,22 @@ export const AddHotelScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { newHotelAdded } = useSelector((state) => state.hotel);
+
   const [extraImages, setExtraImages] = useState([]);
   const [mainImage, setMainImage] = useState('');
+
+  useEffect(() => {
+    if (newHotelAdded) {
+      dispatch(
+        addNotification({
+          title: `New Hotel Added by ${hotelOwner.name}`,
+          description: `Call ${hotelOwner.phone} to confirm`,
+        })
+      );
+      navigate('/hotel-owner');
+    }
+  }, [newHotelAdded]);
 
   /**
    * Gets the coordinates of the hotel from the address prodived using google maps geocoding API.

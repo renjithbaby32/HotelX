@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { set, sub } from 'date-fns';
 import { noCase } from 'change-case';
 import { faker } from '@faker-js/faker';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Box,
   List,
@@ -22,17 +22,27 @@ import { fToNow } from '../../utils/formatTime';
 import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/Scrollbar';
 import MenuPopover from '../../components/MenuPopover';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  clearNotifications,
+  getNotifications,
+} from '../../features/admin/adminSlice';
+import { useNavigate } from 'react-router-dom';
 
 export default function NotificationsPopover() {
   const anchorRef = useRef(null);
 
-  const [notifications, setNotifications] = useState([]);
+  const { notifications, markAllNotificationsAsRead } = useSelector(
+    (state) => state.admin
+  );
+  const dispatch = useDispatch();
 
   const totalUnRead = notifications.filter(
-    (item) => item.isUnRead === true
+    (item) => item.isUnread === true
   ).length;
 
   const [open, setOpen] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -43,13 +53,13 @@ export default function NotificationsPopover() {
   };
 
   const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    );
+    dispatch(clearNotifications());
+    handleClose();
   };
+
+  useEffect(() => {
+    dispatch(getNotifications());
+  }, [markAllNotificationsAsRead]);
 
   return (
     <>
@@ -103,7 +113,7 @@ export default function NotificationsPopover() {
           >
             {notifications.slice(0, 2).map((notification) => (
               <NotificationItem
-                key={notification.id}
+                key={notification._id}
                 notification={notification}
               />
             ))}
@@ -122,7 +132,7 @@ export default function NotificationsPopover() {
           >
             {notifications.slice(2, 5).map((notification) => (
               <NotificationItem
-                key={notification.id}
+                key={notification._id}
                 notification={notification}
               />
             ))}
@@ -130,30 +140,10 @@ export default function NotificationsPopover() {
         </Scrollbar>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple>
-            View All
-          </Button>
-        </Box>
       </MenuPopover>
     </>
   );
 }
-
-// ----------------------------------------------------------------------
-
-NotificationItem.propTypes = {
-  notification: PropTypes.shape({
-    createdAt: PropTypes.instanceOf(Date),
-    id: PropTypes.string,
-    isUnRead: PropTypes.bool,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    type: PropTypes.string,
-    avatar: PropTypes.any,
-  }),
-};
 
 function NotificationItem({ notification }) {
   const { avatar, title } = renderContent(notification);
@@ -196,8 +186,6 @@ function NotificationItem({ notification }) {
   );
 }
 
-// ----------------------------------------------------------------------
-
 function renderContent(notification) {
   const title = (
     <Typography variant="subtitle2">
@@ -212,50 +200,6 @@ function renderContent(notification) {
     </Typography>
   );
 
-  if (notification.type === 'order_placed') {
-    return {
-      avatar: (
-        <img
-          alt={notification.title}
-          src="/static/icons/ic_notification_package.svg"
-        />
-      ),
-      title,
-    };
-  }
-  if (notification.type === 'order_shipped') {
-    return {
-      avatar: (
-        <img
-          alt={notification.title}
-          src="/static/icons/ic_notification_shipping.svg"
-        />
-      ),
-      title,
-    };
-  }
-  if (notification.type === 'mail') {
-    return {
-      avatar: (
-        <img
-          alt={notification.title}
-          src="/static/icons/ic_notification_mail.svg"
-        />
-      ),
-      title,
-    };
-  }
-  if (notification.type === 'chat_message') {
-    return {
-      avatar: (
-        <img
-          alt={notification.title}
-          src="/static/icons/ic_notification_chat.svg"
-        />
-      ),
-      title,
-    };
-  }
   return {
     avatar: notification.avatar ? (
       <img alt={notification.title} src={notification.avatar} />

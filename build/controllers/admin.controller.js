@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateSalesReport = exports.blockOrUnblockHotelOwner = exports.blockOrUnblockHotel = exports.blockOrUnblockUser = exports.getHotelOwnersList = exports.getHotelsList = exports.getUserList = exports.getSettlementStatus = exports.getYearlyStats = exports.getWeeklyStats = exports.registerAdmin = exports.authAdmin = void 0;
+exports.generateSalesReport = exports.blockOrUnblockHotelOwner = exports.blockOrUnblockHotel = exports.blockOrUnblockUser = exports.getHotelOwnersList = exports.clearNotifications = exports.addNotification = exports.getNotifications = exports.getHotelsList = exports.getUserList = exports.getSettlementStatus = exports.getYearlyStats = exports.getWeeklyStats = exports.registerAdmin = exports.authAdmin = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
 const admin_model_1 = __importDefault(require("../models/admin.model"));
@@ -185,6 +185,44 @@ exports.getUserList = (0, express_async_handler_1.default)((req, res) => __await
 exports.getHotelsList = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const hotels = yield hotel_model_1.default.find().populate('owner');
     res.status(200).json(hotels);
+}));
+/**
+ * @api {get} /api/v1/admin/notifications
+ * @apiName GetAdminNotifications
+ * Returns the list of all notifications
+ */
+exports.getNotifications = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const admin = yield admin_model_1.default.findOne();
+    const notifications = admin.notifications;
+    const result = [];
+    for (let i = 0; i < 5; i++) {
+        result.push(notifications.pop());
+    }
+    res.status(200).json(result);
+}));
+/**
+ * @api {post} /api/v1/admin/add-notification
+ * @apiName AddAdminNotification
+ * Adds a new notification to the list of notifications
+ */
+exports.addNotification = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const admin = yield admin_model_1.default.findOne();
+    admin.notifications.push(req.body);
+    yield admin.save();
+    res.status(200).json(admin.notifications);
+}));
+/**
+ * @api {post} /api/v1/admin/clear-notifications
+ * @apiName ClearAdminNotifications
+ * Marks all notifications as read
+ */
+exports.clearNotifications = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const admin = yield admin_model_1.default.findOne();
+    admin.notifications.forEach((notification) => {
+        notification.isUnread = false;
+    });
+    yield admin.save();
+    res.status(200).json(admin.notifications);
 }));
 /**
  * @api {get} /api/v1/admin/hotel-owners-list

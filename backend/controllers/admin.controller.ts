@@ -211,6 +211,48 @@ export const getHotelsList = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @api {get} /api/v1/admin/notifications
+ * @apiName GetAdminNotifications
+ * Returns the list of all notifications
+ */
+export const getNotifications = asyncHandler(async (req, res) => {
+  const admin = await Admin.findOne();
+  const notifications = admin.notifications;
+  const result = [];
+  for (let i = 0; i < 5; i++) {
+    result.push(notifications.pop());
+  }
+
+  res.status(200).json(result);
+});
+
+/**
+ * @api {post} /api/v1/admin/add-notification
+ * @apiName AddAdminNotification
+ * Adds a new notification to the list of notifications
+ */
+export const addNotification = asyncHandler(async (req, res) => {
+  const admin = await Admin.findOne();
+  admin.notifications.push(req.body);
+  await admin.save();
+  res.status(200).json(admin.notifications);
+});
+
+/**
+ * @api {post} /api/v1/admin/clear-notifications
+ * @apiName ClearAdminNotifications
+ * Marks all notifications as read
+ */
+export const clearNotifications = asyncHandler(async (req, res) => {
+  const admin = await Admin.findOne();
+  admin.notifications.forEach((notification: any) => {
+    notification.isUnread = false;
+  });
+  await admin.save();
+  res.status(200).json(admin.notifications);
+});
+
+/**
  * @api {get} /api/v1/admin/hotel-owners-list
  * @apiName HotelOwnersList
  * Returns the list of all hotel owners

@@ -15,6 +15,9 @@ router.route('/settlement-stats').get(admin_controller_1.getSettlementStatus);
 router.route('/userlist').get(admin_controller_1.getUserList);
 router.route('/hotelslist').get(admin_controller_1.getHotelsList);
 router.route('/hotel-owners-list').get(admin_controller_1.getHotelOwnersList);
+router.route('/notifications').get(admin_controller_1.getNotifications);
+router.route('/add-notification').post(admin_controller_1.addNotification);
+router.route('/clear-notifications').post(admin_controller_1.clearNotifications);
 router.route('/user/block-unblock/:userId').post(admin_controller_1.blockOrUnblockUser);
 router.route('/hotel/block-unblock/:hotelId').post(admin_controller_1.blockOrUnblockHotel);
 router

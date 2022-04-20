@@ -12,6 +12,9 @@ import {
   blockOrUnblockHotel,
   blockOrUnblockHotelOwner,
   generateSalesReport,
+  getNotifications,
+  addNotification,
+  clearNotifications,
 } from '../controllers/admin.controller';
 
 const router = express.Router();
@@ -25,6 +28,9 @@ router.route('/settlement-stats').get(getSettlementStatus);
 router.route('/userlist').get(getUserList);
 router.route('/hotelslist').get(getHotelsList);
 router.route('/hotel-owners-list').get(getHotelOwnersList);
+router.route('/notifications').get(getNotifications);
+router.route('/add-notification').post(addNotification);
+router.route('/clear-notifications').post(clearNotifications);
 router.route('/user/block-unblock/:userId').post(blockOrUnblockUser);
 router.route('/hotel/block-unblock/:hotelId').post(blockOrUnblockHotel);
 router

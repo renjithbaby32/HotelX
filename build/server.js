@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = require("dotenv");
 const compression_1 = __importDefault(require("compression"));
+const cloudinary_1 = require("cloudinary");
 const cors_1 = __importDefault(require("cors"));
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
@@ -17,8 +18,8 @@ const booking_routes_1 = __importDefault(require("./routes/booking.routes"));
 const morgan_1 = __importDefault(require("morgan"));
 const errorMiddleWare_1 = require("./middleware/errorMiddleWare");
 const db_1 = __importDefault(require("./config/db"));
-(0, db_1.default)();
 (0, dotenv_1.config)();
+(0, db_1.default)();
 const upload = (0, multer_1.default)();
 let PORT = process.env.PORT || '5000';
 const app = (0, express_1.default)();
@@ -34,6 +35,11 @@ app.use((0, compression_1.default)({
     level: 6,
     threshold: 1024 * 10,
 }));
+const cloudinaryConfig = cloudinary_1.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 app.use(upload.array('images', 5));
 app.use(`${baseAPI}/user`, user_routes_1.default);
 app.use(`${baseAPI}/hotel-owner`, hotelOwner_routes_1.default);

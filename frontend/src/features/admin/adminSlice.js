@@ -20,6 +20,8 @@ const initialState = {
   hotelBlockedOrUnblocked: false,
   hotelOwnerBlockedOrUnblocked: false,
   salesReport: null,
+  notifications: [],
+  markAllNotificationsAsRead: false,
 };
 
 export const adminLogin = createAsyncThunk(
@@ -212,6 +214,57 @@ export const blockOrUnblockHotelOwner = createAsyncThunk(
   }
 );
 
+export const getNotifications = createAsyncThunk(
+  'admin/getNotifications',
+  async (undefined, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`/api/v1/admin/notifications`);
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const clearNotifications = createAsyncThunk(
+  'admin/clearNotifications',
+  async (undefined, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(`/api/v1/admin/clear-notifications`);
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const addNotification = createAsyncThunk(
+  'admin/addNotification',
+  async ({ title, description }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(`/api/v1/admin/add-notification`, {
+        title,
+        description,
+      });
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
 const adminSlice = createSlice({
   name: 'admin',
   initialState,
@@ -290,6 +343,18 @@ const adminSlice = createSlice({
       return {
         ...state,
         hotelOwners: payload,
+      };
+    },
+    [getNotifications.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        notifications: payload,
+      };
+    },
+    [clearNotifications.fulfilled]: (state) => {
+      return {
+        ...state,
+        markAllNotificationsAsRead: true,
       };
     },
   },
