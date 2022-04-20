@@ -70,10 +70,10 @@ function App() {
         </ThemeProvider>
       ) : (
         <Grid className="App">
-          {/* <NavBar /> */}
-          <ThemeProvider>
+          <NavBar />
+          {/* <ThemeProvider>
             <Navbar2 />
-          </ThemeProvider>
+          </ThemeProvider> */}
           <Container maxWidth="lg" sx={{ marginTop: '128px' }}>
             <Routes>
               <Route path={'/'} element={<HomeScreen />}></Route>

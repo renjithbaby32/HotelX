@@ -64,7 +64,7 @@ export const UserLogin = () => {
     dispatch(userLogin({ email, password }));
   };
   const validationSchema = Yup.object({
-    email: Yup.string().email('Invalid e-mail'),
+    email: Yup.string().email('Invalid e-mail').required('Required'),
     password: Yup.string().required('Required'),
   });
 

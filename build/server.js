@@ -14,6 +14,7 @@ const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const hotel_routes_1 = __importDefault(require("./routes/hotel.routes"));
 const hotelOwner_routes_1 = __importDefault(require("./routes/hotelOwner.routes"));
 const booking_routes_1 = __importDefault(require("./routes/booking.routes"));
+const morgan_1 = __importDefault(require("morgan"));
 const errorMiddleWare_1 = require("./middleware/errorMiddleWare");
 const db_1 = __importDefault(require("./config/db"));
 (0, db_1.default)();
@@ -26,6 +27,8 @@ app.use((0, cors_1.default)({
     origin: '*',
     methods: '*',
 }));
+if (process.env.NODE_ENV === 'development')
+    app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.json({ limit: '10mb' }));
 app.use((0, compression_1.default)({
     level: 6,
@@ -40,8 +43,9 @@ app.use(`${baseAPI}/admin`, admin_routes_1.default);
 const dirname = path_1.default.resolve();
 if (process.env.NODE_ENV === 'production') {
     app.use(express_1.default.static(path_1.default.join(dirname, '/frontend/build')));
-    app.get('*', (req, res, next) => res.sendFile('index.html', { root: '/frontend/build' }, (err) => {
+    app.get('*', (req, res, next) => res.sendFile('index.html', { root: path_1.default.join(dirname, '/frontend/build') }, (err) => {
         if (err) {
+            console.log(err);
             next(err);
         }
     }));

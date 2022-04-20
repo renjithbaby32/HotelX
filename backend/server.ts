@@ -11,6 +11,7 @@ import hotelRouter from './routes/hotel.routes';
 import hotelOwnerRouter from './routes/hotelOwner.routes';
 import bookingRouter from './routes/booking.routes';
 import { cloudinaryConfig } from './config/cloudinary.config';
+import morgan from 'morgan';
 
 import { errorHandler, notFound } from './middleware/errorMiddleWare';
 
@@ -32,6 +33,8 @@ app.use(
     methods: '*',
   })
 );
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(
   compression({
@@ -54,11 +57,16 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(dirname, '/frontend/build')));
 
   app.get('*', (req, res, next) =>
-    res.sendFile('index.html', { root: '/frontend/build' }, (err) => {
-      if (err) {
-        next(err);
+    res.sendFile(
+      'index.html',
+      { root: path.join(dirname, '/frontend/build') },
+      (err) => {
+        if (err) {
+          console.log(err);
+          next(err);
+        }
       }
-    })
+    )
   );
 } else {
   app.get('/', (req, res) => {
