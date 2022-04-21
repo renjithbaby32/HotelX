@@ -91,7 +91,9 @@ exports.addHotel = (0, express_async_handler_1.default)((req, res) => __awaiter(
  * Sends back an array containing information about all hotels.
  */
 exports.getHotels = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const hotels = yield hotel_model_1.default.find();
+    const hotels = yield hotel_model_1.default.find({
+        isActive: true,
+    });
     if (hotels) {
         res.status(200).json(hotels);
     }
@@ -108,6 +110,7 @@ exports.getHotels = (0, express_async_handler_1.default)((req, res) => __awaiter
 exports.getNearbyHotels = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { latitude, longitude } = req.query;
     const hotels = yield hotel_model_1.default.find({
+        isActive: true,
         coordinates: {
             $near: {
                 $geometry: { type: 'Point', coordinates: [longitude, latitude] },

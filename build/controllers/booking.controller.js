@@ -68,7 +68,9 @@ exports.checkAvailability = (0, express_async_handler_1.default)((req, res) => _
  */
 exports.checkAvailabilityMain = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { startDate, endDate, numberOfDays, numberOfRooms } = req.body;
-    const hotels = yield hotel_model_1.default.find();
+    const hotels = yield hotel_model_1.default.find({
+        isActive: true,
+    });
     const result = [];
     hotels.forEach((hotel) => __awaiter(void 0, void 0, void 0, function* () {
         let maxAvailabilityOfBudgetRooms = Number.MAX_VALUE;
