@@ -24,6 +24,14 @@ const initialState = {
   markAllNotificationsAsRead: false,
 };
 
+const token = JSON.parse(localStorage.getItem('admin'))?.token;
+
+const config = {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+};
+
 export const adminLogin = createAsyncThunk(
   'admin/adminLogin',
   async ({ email, password }, { rejectWithValue }) => {
@@ -47,10 +55,14 @@ export const getSalesReport = createAsyncThunk(
   'admin/getSalesReport',
   async ({ startDate, endDate }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('/api/v1/admin/salesreport', {
-        startDate,
-        endDate,
-      });
+      const { data } = await axios.post(
+        '/api/v1/admin/salesreport',
+        {
+          startDate,
+          endDate,
+        },
+        config
+      );
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -66,9 +78,13 @@ export const getWeeklyStats = createAsyncThunk(
   'admin/getWeeklyStats',
   async (startDate, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('/api/v1/admin/weekly-stats', {
-        startDate,
-      });
+      const { data } = await axios.post(
+        '/api/v1/admin/weekly-stats',
+        {
+          startDate,
+        },
+        config
+      );
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -84,7 +100,7 @@ export const getMonthlyStats = createAsyncThunk(
   'admin/getMonthlyStats',
   async (undefined, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('/api/v1/admin/monthly-stats');
+      const { data } = await axios.get('/api/v1/admin/monthly-stats', config);
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -100,7 +116,10 @@ export const getSettlementStats = createAsyncThunk(
   'admin/getSettlementStats',
   async (undefined, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('/api/v1/admin/settlement-stats');
+      const { data } = await axios.get(
+        '/api/v1/admin/settlement-stats',
+        config
+      );
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -116,7 +135,7 @@ export const getUserList = createAsyncThunk(
   'admin/getUserList',
   async (undefined, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('/api/v1/admin/userlist');
+      const { data } = await axios.get('/api/v1/admin/userlist', config);
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -132,7 +151,7 @@ export const getHotels = createAsyncThunk(
   'admin/getHotels',
   async (undefined, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('/api/v1/admin/hotelslist');
+      const { data } = await axios.get('/api/v1/admin/hotelslist', config);
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -148,7 +167,10 @@ export const getHotelOwnersList = createAsyncThunk(
   'admin/getHotelOwnersList',
   async (undefined, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get('/api/v1/admin/hotel-owners-list');
+      const { data } = await axios.get(
+        '/api/v1/admin/hotel-owners-list',
+        config
+      );
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -165,7 +187,9 @@ export const blockOrUnblockUser = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
-        `/api/v1/admin/user/block-unblock/${userId}`
+        `/api/v1/admin/user/block-unblock/${userId}`,
+        {},
+        config
       );
       return data;
     } catch (error) {
@@ -183,7 +207,9 @@ export const blockOrUnblockHotel = createAsyncThunk(
   async (hotelId, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
-        `/api/v1/admin/hotel/block-unblock/${hotelId}`
+        `/api/v1/admin/hotel/block-unblock/${hotelId}`,
+        {},
+        config
       );
       return data;
     } catch (error) {
@@ -201,7 +227,9 @@ export const blockOrUnblockHotelOwner = createAsyncThunk(
   async (hotelOwnerId, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(
-        `/api/v1/admin/hotel-owner/block-unblock/${hotelOwnerId}`
+        `/api/v1/admin/hotel-owner/block-unblock/${hotelOwnerId}`,
+        {},
+        config
       );
       return data;
     } catch (error) {
@@ -218,7 +246,7 @@ export const getNotifications = createAsyncThunk(
   'admin/getNotifications',
   async (undefined, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`/api/v1/admin/notifications`);
+      const { data } = await axios.get(`/api/v1/admin/notifications`, config);
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -234,7 +262,11 @@ export const clearNotifications = createAsyncThunk(
   'admin/clearNotifications',
   async (undefined, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`/api/v1/admin/clear-notifications`);
+      const { data } = await axios.post(
+        `/api/v1/admin/clear-notifications`,
+        {},
+        config
+      );
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -250,10 +282,14 @@ export const addNotification = createAsyncThunk(
   'admin/addNotification',
   async ({ title, description }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`/api/v1/admin/add-notification`, {
-        title,
-        description,
-      });
+      const { data } = await axios.post(
+        `/api/v1/admin/add-notification`,
+        {
+          title,
+          description,
+        },
+        config
+      );
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -268,6 +304,14 @@ export const addNotification = createAsyncThunk(
 const adminSlice = createSlice({
   name: 'admin',
   initialState,
+  reducers: {
+    setAdmin: (state) => {
+      state.admin = JSON.parse(localStorage.getItem('admin'));
+    },
+    clearAdmin: (state) => {
+      state.admin = null;
+    },
+  },
   extraReducers: {
     [adminLogin.pending]: () => {
       console.log('login pending');
@@ -361,3 +405,4 @@ const adminSlice = createSlice({
 });
 
 export default adminSlice.reducer;
+export const { setAdmin, clearAdmin } = adminSlice.actions;

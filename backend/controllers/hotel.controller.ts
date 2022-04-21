@@ -104,7 +104,9 @@ export const addHotel = asyncHandler(async (req, res) => {
  */
 
 export const getHotels = asyncHandler(async (req, res) => {
-  const hotels = await Hotel.find();
+  const hotels = await Hotel.find({
+    isActive: true,
+  });
 
   if (hotels) {
     res.status(200).json(hotels);
@@ -123,6 +125,7 @@ export const getHotels = asyncHandler(async (req, res) => {
 export const getNearbyHotels = asyncHandler(async (req, res) => {
   const { latitude, longitude } = req.query;
   const hotels = await Hotel.find({
+    isActive: true,
     coordinates: {
       $near: {
         $geometry: { type: 'Point', coordinates: [longitude, latitude] },

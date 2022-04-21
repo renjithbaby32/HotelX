@@ -62,7 +62,8 @@ const HomeScreen = () => {
         </>
       ) : (
         <>
-          <h1>Nearby hotels (within 100km)</h1>
+          {nearbyHotels.length > 0 && <h1>Nearby hotels (within 100km)</h1>}
+
           <Row>
             {nearbyHotels.map((hotel) => {
               return (

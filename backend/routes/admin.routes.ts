@@ -16,25 +16,32 @@ import {
   addNotification,
   clearNotifications,
 } from '../controllers/admin.controller';
+import { adminProtectedRoute } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
 router.route('/signin').post(authAdmin);
 router.route('/signup').post(registerAdmin);
-router.route('/salesreport').post(generateSalesReport);
-router.route('/weekly-stats').post(getWeeklyStats);
-router.route('/monthly-stats').get(getYearlyStats);
-router.route('/settlement-stats').get(getSettlementStatus);
-router.route('/userlist').get(getUserList);
-router.route('/hotelslist').get(getHotelsList);
-router.route('/hotel-owners-list').get(getHotelOwnersList);
-router.route('/notifications').get(getNotifications);
-router.route('/add-notification').post(addNotification);
-router.route('/clear-notifications').post(clearNotifications);
-router.route('/user/block-unblock/:userId').post(blockOrUnblockUser);
-router.route('/hotel/block-unblock/:hotelId').post(blockOrUnblockHotel);
+router.route('/salesreport').post(adminProtectedRoute, generateSalesReport);
+router.route('/weekly-stats').post(adminProtectedRoute, getWeeklyStats);
+router.route('/monthly-stats').get(adminProtectedRoute, getYearlyStats);
+router.route('/settlement-stats').get(adminProtectedRoute, getSettlementStatus);
+router.route('/userlist').get(adminProtectedRoute, getUserList);
+router.route('/hotelslist').get(adminProtectedRoute, getHotelsList);
+router.route('/hotel-owners-list').get(adminProtectedRoute, getHotelOwnersList);
+router.route('/notifications').get(adminProtectedRoute, getNotifications);
+router.route('/add-notification').post(adminProtectedRoute, addNotification);
+router
+  .route('/clear-notifications')
+  .post(adminProtectedRoute, clearNotifications);
+router
+  .route('/user/block-unblock/:userId')
+  .post(adminProtectedRoute, blockOrUnblockUser);
+router
+  .route('/hotel/block-unblock/:hotelId')
+  .post(adminProtectedRoute, blockOrUnblockHotel);
 router
   .route('/hotel-owner/block-unblock/:hotelOwnerId')
-  .post(blockOrUnblockHotelOwner);
+  .post(adminProtectedRoute, blockOrUnblockHotelOwner);
 
 export default router;

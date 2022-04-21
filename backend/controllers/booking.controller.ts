@@ -91,7 +91,9 @@ export const checkAvailability = asyncHandler(async (req, res) => {
 
 export const checkAvailabilityMain = asyncHandler(async (req, res) => {
   const { startDate, endDate, numberOfDays, numberOfRooms } = req.body;
-  const hotels = await Hotel.find();
+  const hotels = await Hotel.find({
+    isActive: true,
+  });
   const result: any = [];
 
   hotels.forEach(async (hotel) => {
