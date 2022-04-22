@@ -11,7 +11,7 @@ const navbarException = [
   '/register',
   '/hotel-owner-login',
   '/hotel-owner-register',
-  '/admin-login',
+  '/login-admin',
   '/admin',
 ];
 
@@ -26,17 +26,17 @@ export const NavBar = () => {
       {navbarException.includes(pathname) ? null : (
         <header>
           <Navbar
-            variant="dark"
+            variant='dark'
             style={{ backgroundColor: '#000000' }}
-            expand="lg"
+            expand='lg'
             collapseOnSelect
           >
             <Container>
-              <LinkContainer to="/">
+              <LinkContainer to='/'>
                 <Navbar.Brand>HotelX</Navbar.Brand>
               </LinkContainer>
-              <Navbar.Toggle aria-controls="basic-navbar-nav" />
-              <Navbar.Collapse id="basic-navbar-nav">
+              <Navbar.Toggle aria-controls='basic-navbar-nav' />
+              <Navbar.Collapse id='basic-navbar-nav'>
                 {/* <Nav className="first-nav">
               <LinkContainer
                 className="px-3"
@@ -60,24 +60,24 @@ export const NavBar = () => {
                 <Nav.Link>Everything else</Nav.Link>
               </LinkContainer>
             </Nav> */}
-                <Nav className="ml-auto">
+                <Nav className='ml-auto'>
                   {/* <SearchBox /> */}
 
                   {user ? (
                     <NavDropdown
-                      className="px-3"
+                      className='px-3'
                       title={
                         <span style={{ color: 'white' }}>{user.name}</span>
                       }
-                      id="username"
+                      id='username'
                     >
-                      <LinkContainer to="/profile">
+                      <LinkContainer to='/profile'>
                         <NavDropdown.Item>Profile</NavDropdown.Item>
                       </LinkContainer>
                       <LinkContainer to={`/bookings/${user._id}`}>
                         <NavDropdown.Item>Bookings</NavDropdown.Item>
                       </LinkContainer>
-                      <LinkContainer to="/login">
+                      <LinkContainer to='/login'>
                         <NavDropdown.Item
                           onClick={() => {
                             dispatch(clearUser());
@@ -90,18 +90,18 @@ export const NavBar = () => {
                     </NavDropdown>
                   ) : hotelOwner ? (
                     <NavDropdown
-                      className="px-3"
+                      className='px-3'
                       title={
                         <span style={{ color: 'white' }}>
                           {hotelOwner.name}
                         </span>
                       }
-                      id="username"
+                      id='username'
                     >
-                      <LinkContainer to="/profile">
+                      <LinkContainer to='/profile'>
                         <NavDropdown.Item>Profile</NavDropdown.Item>
                       </LinkContainer>
-                      <LinkContainer to="/login">
+                      <LinkContainer to='/login'>
                         <NavDropdown.Item
                           onClick={() => {
                             dispatch(clearHotelOwner());
@@ -113,7 +113,7 @@ export const NavBar = () => {
                       </LinkContainer>
                     </NavDropdown>
                   ) : (
-                    <LinkContainer style={{ color: 'white' }} to="/login">
+                    <LinkContainer style={{ color: 'white' }} to='/login'>
                       <Nav.Link>
                         <PersonIcon size={'small'}></PersonIcon> Sign In
                       </Nav.Link>
