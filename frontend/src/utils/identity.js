@@ -29,7 +29,7 @@ export const useIdentity = (identity) => {
       }
     } else if (identity === 'admin') {
       if (!admin) {
-        navigate('/admin-login');
+        navigate('/login-admin');
       } else {
         dispatch(setAdminAction());
       }

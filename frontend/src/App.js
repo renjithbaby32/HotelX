@@ -69,12 +69,12 @@ function App() {
           </Routes>
         </ThemeProvider>
       ) : (
-        <Grid className="App">
+        <Grid className='App'>
           <NavBar />
           {/* <ThemeProvider>
             <Navbar2 />
           </ThemeProvider> */}
-          <Container maxWidth="lg" sx={{ marginTop: '128px' }}>
+          <Container maxWidth='lg' sx={{ marginTop: '128px' }}>
             <Routes>
               <Route path={'/'} element={<HomeScreen />}></Route>
               <Route path={'/login'} element={<UserLogin />}></Route>
@@ -115,7 +115,7 @@ function App() {
               <Route path={'/payment'} element={<PaymentScreen />}></Route>
 
               <Route
-                path={'/admin-login'}
+                path={'/login-admin'}
                 element={<AdminLoginScreen />}
               ></Route>
               <Route path={'/dash'} element={<Dash />}></Route>

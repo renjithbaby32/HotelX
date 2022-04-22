@@ -12,8 +12,6 @@ import {
   Grid,
   CssBaseline,
   Avatar,
-  FormControlLabel,
-  Checkbox,
   Alert,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -23,13 +21,13 @@ import * as Yup from 'yup';
 function Copyright(props) {
   return (
     <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
+      variant='body2'
+      color='text.secondary'
+      align='center'
       {...props}
     >
       {'Copyright © '}
-      <Link color="inherit" to="/">
+      <Link color='inherit' to='/'>
         HotelX
       </Link>{' '}
       {new Date().getFullYear()}
@@ -69,7 +67,7 @@ export const UserLogin = () => {
   });
 
   return (
-    <Grid container component="main" sx={{ height: '100vh' }}>
+    <Grid container component='main'>
       <CssBaseline />
       <Grid
         item
@@ -100,11 +98,11 @@ export const UserLogin = () => {
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
           <Box sx={{ mt: 1 }}>
-            {loginError && <Alert severity="error">{loginErrorMessage}</Alert>}
+            {loginError && <Alert severity='error'>{loginErrorMessage}</Alert>}
             <Formik
               initialValues={initialValues}
               onSubmit={onSubmit}
@@ -112,36 +110,36 @@ export const UserLogin = () => {
             >
               {({ values, handleChange, handleBlur }) => (
                 <Form>
-                  <ErrorMessage name="email">
+                  <ErrorMessage name='email'>
                     {(error) => (
                       <Typography style={{ color: 'red' }}>{error}</Typography>
                     )}
                   </ErrorMessage>
                   <TextField
-                    margin="normal"
+                    margin='normal'
                     required
                     fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
+                    id='email'
+                    label='Email Address'
+                    name='email'
+                    autoComplete='email'
                     autoFocus
                     onChange={handleChange}
                   />
-                  <ErrorMessage name="password">
+                  <ErrorMessage name='password'>
                     {(error) => (
                       <Typography style={{ color: 'red' }}>{error}</Typography>
                     )}
                   </ErrorMessage>
                   <TextField
-                    margin="normal"
+                    margin='normal'
                     required
                     fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
+                    name='password'
+                    label='Password'
+                    type='password'
+                    id='password'
+                    autoComplete='current-password'
                     onChange={handleChange}
                     helperText={
                       !values.password
@@ -150,9 +148,9 @@ export const UserLogin = () => {
                     }
                   />
                   <Button
-                    type="submit"
+                    type='submit'
                     fullWidth
-                    variant="contained"
+                    variant='contained'
                     sx={{ mt: 3, mb: 2 }}
                   >
                     Sign In
@@ -170,7 +168,7 @@ export const UserLogin = () => {
                 </Link>
               </Grid>
               <Grid item>
-                <Link to="/register" variant="body2">
+                <Link to='/register' variant='body2'>
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
