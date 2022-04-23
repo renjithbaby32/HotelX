@@ -2,7 +2,7 @@ import Iconify from '../../components/Iconify';
 
 const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 
-const navConfig = [
+export const navConfigForAdmin = [
   {
     title: 'dashboard',
     path: '/admin',
@@ -28,6 +28,32 @@ const navConfig = [
     path: '/admin/sales-report',
     icon: getIcon('eva:lock-fill'),
   },
+  {
+    title: 'log out',
+    path: '/login',
+    icon: getIcon('eva:power-fill'),
+  },
 ];
 
-export default navConfig;
+export const navConfigForHotelOwner = [
+  {
+    title: 'overview',
+    path: '/hotel-owner',
+    icon: getIcon('eva:pie-chart-2-fill'),
+  },
+  {
+    title: 'my hotels',
+    path: '/hotel-owner/hotels',
+    icon: getIcon('eva:home-fill'),
+  },
+  {
+    title: 'add a new hotel',
+    path: '/hotel-owner/add',
+    icon: getIcon('eva:plus-fill'),
+  },
+  {
+    title: 'log out',
+    path: '/login',
+    icon: getIcon('eva:power-fill'),
+  },
+];

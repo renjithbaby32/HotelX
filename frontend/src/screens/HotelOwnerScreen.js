@@ -35,9 +35,6 @@ export const HotelOwnerScreen = () => {
           );
         })}
       </Row>
-      <Link to={'/hotel/add'}>
-        <Button variant="outlined">Add Hotel</Button>
-      </Link>
     </Stack>
   );
 };

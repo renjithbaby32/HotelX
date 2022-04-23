@@ -23,7 +23,7 @@ export const useIdentity = (identity) => {
       }
     } else if (identity === 'hotelOwner') {
       if (!hotelOwner) {
-        navigate('/hotel-owner-login');
+        navigate('/login-hotel-owner');
       } else {
         dispatch(setHotelOwnerAction());
       }

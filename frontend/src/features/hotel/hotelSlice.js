@@ -6,6 +6,7 @@ const initialState = {
   nearbyHotels: [],
   hotel: null,
   newHotelAdded: false,
+  hotelReview: null,
 };
 
 export const addHotel = createAsyncThunk(
@@ -20,6 +21,29 @@ export const addHotel = createAsyncThunk(
     const { data } = await axios.post(
       '/api/v1/hotel/register',
       hotelDetails,
+      config
+    );
+    return data;
+  }
+);
+
+export const addHotelReview = createAsyncThunk(
+  'hotels/addHotelReview',
+  async ({ hotelId, userId, rating, comment = '' }) => {
+    const config = {
+      headers: {
+        'Content-Type': 'Application/json',
+      },
+    };
+
+    const { data } = await axios.post(
+      '/api/v1/reviews',
+      {
+        hotelId,
+        userId,
+        rating,
+        comment,
+      },
       config
     );
     return data;
@@ -49,6 +73,11 @@ export const getNearbyHotels = createAsyncThunk(
 const hotelSlice = createSlice({
   name: 'hotel',
   initialState,
+  reducers: {
+    resetNewHotelAddedState: (state) => {
+      state.newHotelAdded = false;
+    },
+  },
   extraReducers: {
     [getHotels.pending]: () => {
       console.log('hotels loading');
@@ -65,7 +94,11 @@ const hotelSlice = createSlice({
     [addHotel.fulfilled]: (state, { payload }) => {
       return { ...state, newHotelAdded: true };
     },
+    [addHotelReview.fulfilled]: (state, { payload }) => {
+      return { ...state, hotelReview: payload };
+    },
   },
 });
 
 export default hotelSlice.reducer;
+export const { resetNewHotelAddedState } = hotelSlice.actions;

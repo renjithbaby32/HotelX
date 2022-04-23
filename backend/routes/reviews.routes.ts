@@ -1,5 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
+import { createHotelReview } from '../controllers/reviews.controller';
 
-const Router = express.Router();
+const router = express.Router();
 
-export default Router;
+router.route('/').post(createHotelReview);
+
+export default router;

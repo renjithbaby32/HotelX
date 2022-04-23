@@ -6,6 +6,7 @@ import {
   verifyOTP,
   getUpComingBookings,
   getHotels,
+  getWeeklyStats,
 } from '../controllers/hotelOwner.controller';
 import { hotelOwnerProtectedRoute } from '../middleware/authMiddleware';
 
@@ -21,5 +22,6 @@ router
 router
   .route('/gethotels/:hotelownerid')
   .get(hotelOwnerProtectedRoute, getHotels);
+router.route('/weekly-stats').post(hotelOwnerProtectedRoute, getWeeklyStats);
 
 export default router;

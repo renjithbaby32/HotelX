@@ -13,8 +13,8 @@ const APPBAR_DESKTOP = 92;
 
 const RootStyle = styled(AppBar)(({ theme }) => ({
   boxShadow: 'none',
-  backdropFilter: 'blur(6px)',
-  WebkitBackdropFilter: 'blur(6px)', // Fix on Mobile
+  // backdropFilter: 'blur(6px)',
+  // WebkitBackdropFilter: 'blur(6px)', // Fix on Mobile
   backgroundColor: alpha(theme.palette.background.default, 0.72),
   [theme.breakpoints.up('lg')]: {
     width: `calc(100% - ${DRAWER_WIDTH + 1}px)`,
@@ -33,7 +33,7 @@ DashboardNavbar.propTypes = {
   onOpenSidebar: PropTypes.func,
 };
 
-export default function DashboardNavbar({ onOpenSidebar }) {
+export default function DashboardNavbar({ onOpenSidebar, role }) {
   return (
     <RootStyle>
       <ToolbarStyle>
@@ -44,7 +44,7 @@ export default function DashboardNavbar({ onOpenSidebar }) {
           <Iconify icon="eva:menu-2-fill" />
         </IconButton>
 
-        <Searchbar />
+        {/* <Searchbar /> */}
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack
@@ -52,8 +52,9 @@ export default function DashboardNavbar({ onOpenSidebar }) {
           alignItems="center"
           spacing={{ xs: 0.5, sm: 1.5 }}
         >
-          <LanguagePopover />
-          <NotificationsPopover />
+          {/* <LanguagePopover /> */}
+          {role === 'admin' && <NotificationsPopover />}
+
           <AccountPopover />
         </Stack>
       </ToolbarStyle>

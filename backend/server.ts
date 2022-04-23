@@ -56,6 +56,7 @@ app.use(`${baseAPI}/hotel-owner`, hotelOwnerRouter);
 app.use(`${baseAPI}/hotel`, hotelRouter);
 app.use(`${baseAPI}/booking`, bookingRouter);
 app.use(`${baseAPI}/admin`, adminRouter);
+app.use(`${baseAPI}/reviews`, reviewsRouter);
 
 const dirname = path.resolve();
 

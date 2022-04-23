@@ -36,16 +36,22 @@ export const HotelCard = ({ hotel, viewMoreFunction }) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button
-            onClick={
-              viewMoreFunction
-                ? (e) => viewMoreFunction(hotel._id)
-                : viewMoreHandler
-            }
-            variant="outlined"
-          >
-            View more
-          </Button>
+          {hotel.isActive ? (
+            <Button
+              onClick={
+                viewMoreFunction
+                  ? (e) => viewMoreFunction(hotel._id)
+                  : viewMoreHandler
+              }
+              variant="outlined"
+            >
+              View upcoming Bookings
+            </Button>
+          ) : (
+            <Button variant="outlined" disabled>
+              Waiting for approval
+            </Button>
+          )}
         </CardActions>
       </Card>
     </div>

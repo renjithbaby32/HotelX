@@ -32,6 +32,7 @@ for (let i = 0; i < 12; i++) {
 
 export const AdminDashBoardScreen = () => {
   const {
+    admin,
     weeklySales,
     newUsers,
     newBookings,
@@ -47,10 +48,12 @@ export const AdminDashBoardScreen = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getWeeklyStats(subDays(new Date(), 7)));
-    dispatch(getMonthlyStats());
-    dispatch(getSettlementStats());
-  }, []);
+    if (admin) {
+      dispatch(getWeeklyStats(subDays(new Date(), 7)));
+      dispatch(getMonthlyStats());
+      dispatch(getSettlementStats());
+    }
+  }, [admin]);
 
   return (
     <Page title="Dashboard">

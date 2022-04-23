@@ -5,6 +5,8 @@ import { client } from '../config/twilio.config';
 import { config } from 'dotenv';
 import { addDays, differenceInDays, isSameDay, parseISO } from 'date-fns';
 import Hotel from '../models/hotel.model';
+import Booking from '../models/booking.model';
+import { RequestWithIdentity } from '../middleware/authMiddleware';
 
 config();
 
@@ -180,3 +182,38 @@ export const getHotels = asyncHandler(async (req, res) => {
   const hotels = await Hotel.find({ owner: hotelownerid });
   res.status(200).json(hotels);
 });
+
+/**
+ * @api {post} /api/v1/hotel-owner/weekly-stats
+ * @apiName WeeklyStats
+ */
+export const getWeeklyStats = asyncHandler(
+  async (req: RequestWithIdentity, res) => {
+    const { startDate, hotelOwnerId } = req.body;
+
+    type weeklyStats = {
+      weeklySales: number;
+      newBookings: number;
+    };
+
+    let weeklyStats: weeklyStats = {
+      weeklySales: 0,
+      newBookings: 0,
+    };
+
+    const weeklyBookings = await Booking.find({
+      createdAt: {
+        $gte: startDate,
+      },
+    }).populate('hotel', 'owner');
+
+    weeklyBookings.forEach((booking) => {
+      if (booking.hotel.owner.toString() === hotelOwnerId) {
+        weeklyStats.weeklySales += booking.amount;
+        weeklyStats.newBookings += 1;
+      }
+    });
+
+    res.json(weeklyStats);
+  }
+);

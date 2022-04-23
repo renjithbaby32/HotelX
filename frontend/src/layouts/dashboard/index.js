@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-//
 import DashboardNavbar from './DashboardNavbar';
 import DashboardSidebar from './DashboardSidebar';
 import { useIdentity } from '../../utils/identity';
+import { useLocation } from 'react-router-dom';
+import { adminURIS, hotelOwnerURIS } from '../../constants';
 
 const APP_BAR_MOBILE = 64;
 const APP_BAR_DESKTOP = 92;
@@ -29,16 +30,21 @@ const MainStyle = styled('div')(({ theme }) => ({
 }));
 
 export default function DashboardLayout() {
-  useIdentity('admin');
+  const { pathname } = useLocation();
+
+  useIdentity(adminURIS.includes(pathname) ? 'admin' : 'hotelOwner');
+
+  const role = adminURIS.includes(pathname) ? 'admin' : 'hotelOwner';
 
   const [open, setOpen] = useState(false);
 
   return (
     <RootStyle>
-      <DashboardNavbar onOpenSidebar={() => setOpen(true)} />
+      <DashboardNavbar onOpenSidebar={() => setOpen(true)} role={role} />
       <DashboardSidebar
         isOpenSidebar={open}
         onCloseSidebar={() => setOpen(false)}
+        role={role}
       />
       <MainStyle>
         <Outlet />

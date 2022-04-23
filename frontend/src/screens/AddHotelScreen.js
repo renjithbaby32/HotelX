@@ -1,15 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form as FormikForm, ErrorMessage } from 'formik';
-import { Button } from '@mui/material';
+import {
+  Avatar,
+  Paper,
+  Box,
+  Button,
+  CssBaseline,
+  Grid,
+  Typography,
+  TextField,
+} from '@mui/material';
+import HotelIcon from '@mui/icons-material/Hotel';
 import { FormContainer } from '../components/FormContainer';
 import { Form } from 'react-bootstrap';
 import * as Yup from 'yup';
-import { addHotel } from '../features/hotel/hotelSlice';
+import {
+  addHotel,
+  resetNewHotelAddedState,
+} from '../features/hotel/hotelSlice';
 import axios from 'axios';
 import { useIdentity } from '../utils/identity';
 import { addNotification } from '../features/admin/adminSlice';
+import mapboxgl from 'mapbox-gl';
+
+function Copyright(props) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {'Copyright © '}
+      <Link color="inherit" to="/">
+        HotelX
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
+
+mapboxgl.accessToken =
+  'pk.eyJ1IjoicmVuaml0aGJhYnkiLCJhIjoiY2wyYmU4bWlrMDNlODNpbnV5MW9pZDMyNCJ9.5VetjmUxmKj4oaT21Yfh9g';
 
 const initialValues = {
   name: '',
@@ -44,6 +79,12 @@ const validationSchema = Yup.object({
 });
 
 export const AddHotelScreen = () => {
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const [lng, setLng] = useState(76.26);
+  const [lat, setLat] = useState(9.93);
+  const [zoom, setZoom] = useState(9);
+
   const { hotelOwner } = useIdentity('hotelOwner');
   if (hotelOwner) {
     var { _id: hotelOwnerId } = hotelOwner;
@@ -57,35 +98,38 @@ export const AddHotelScreen = () => {
   const [mainImage, setMainImage] = useState('');
 
   useEffect(() => {
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [lng, lat],
+      zoom: zoom,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!map.current) return; // wait for map to initialize
+    map.current.on('move', () => {
+      setLng(map.current.getCenter().lng.toFixed(4));
+      setLat(map.current.getCenter().lat.toFixed(4));
+      setZoom(map.current.getZoom().toFixed(2));
+    });
+  });
+
+  useEffect(() => {
     if (newHotelAdded) {
       dispatch(
         addNotification({
           title: `New Hotel Added by ${hotelOwner.name}`,
-          description: `Call ${hotelOwner.phone} to confirm`,
+          description: `Go to hotels to see more details`,
         })
       );
       navigate('/hotel-owner');
     }
-  }, [newHotelAdded]);
 
-  /**
-   * Gets the coordinates of the hotel from the address prodived using google maps geocoding API.
-   */
-  useEffect(() => {
-    const getCoordinates = async () => {
-      const { data } = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyAgCuggYwRwESeTMcghnug3oDmgi2-JN-Y`,
-        {
-          params: {
-            address: 'Poodamkallu',
-            key: 'AIzaSyAgCuggYwRwESeTMcghnug3oDmgi2-JN-Y',
-          },
-        }
-      );
+    return () => {
+      dispatch(resetNewHotelAddedState());
     };
-
-    getCoordinates();
-  }, []);
+  }, [newHotelAdded]);
 
   const onSubmit = ({
     name,
@@ -114,7 +158,7 @@ export const AddHotelScreen = () => {
     formData.set('numberOfBudgetRooms', numberOfBudgetRooms);
     formData.set('numberOfPremiumRooms', numberOfPremiumRooms);
     formData.set('mainImage', mainImage);
-    formData.set('coordinates', coordinates);
+    formData.set('coordinates', [lng, lat]);
     formData.set('hotelOwnerId', hotelOwnerId);
     extraImages.forEach((image) => {
       formData.append('extraImages', image);
@@ -152,219 +196,316 @@ export const AddHotelScreen = () => {
   };
 
   return (
-    <FormContainer>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-      >
-        {({ values, handleChange, handleBlur }) => (
-          <FormikForm>
-            <Form.Group>
-              <ErrorMessage name="name">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="name">Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                placeholder="Enter name"
-                value={values.name}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
+    <Grid container component="main">
+      <CssBaseline />
+      <Grid item xs={12} sm={12} md={12} component={Paper} elevation={6}>
+        <Box
+          sx={{
+            my: 8,
+            mx: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <HotelIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Register a Hotel
+          </Typography>
+          <Box sx={{ mt: 1 }}>
+            {/* {loginError && <Alert severity='error'>{loginErrorMessage}</Alert>} */}
+            <Formik
+              initialValues={initialValues}
+              onSubmit={onSubmit}
+              validationSchema={validationSchema}
+            >
+              {({ values, handleChange, handleBlur }) => (
+                <FormikForm>
+                  <ErrorMessage style={{}} name="name">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="text"
+                    fullWidth
+                    name="name"
+                    placeholder="Enter name of the hotel"
+                    autoFocus
+                    onChange={handleChange}
+                  ></TextField>
 
-            <Form.Group>
-              <ErrorMessage name="state">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="state">State</Form.Label>
+                  <ErrorMessage name="state">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="text"
+                    fullWidth
+                    name="state"
+                    placeholder="State"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-              <Form.Control
-                name="state"
-                type="text"
-                placeholder="Enter the name of the state"
-                value={values.state}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
+                  <ErrorMessage name="city">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="text"
+                    fullWidth
+                    name="city"
+                    placeholder="City"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-            <Form.Group>
-              <ErrorMessage name="city">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="city">City</Form.Label>
+                  <ErrorMessage name="postalCode">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    name="postalCode"
+                    placeholder="Postal Code"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-              <Form.Control
-                name="city"
-                type="text"
-                placeholder="Enter city name"
-                value={values.city}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
+                  <ErrorMessage name="stars">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    name="stars"
+                    placeholder="Star Rating (1-5)"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-            <Form.Group>
-              <ErrorMessage name="postalCode">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="postalCode">Postal Code</Form.Label>
+                  <ErrorMessage name="costPerDayBudget">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    name="costPerDayBudget"
+                    placeholder="Budget Rooms Per Day Cost"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-              <Form.Control
-                name="postalCode"
-                type="number"
-                placeholder="Enter postal code"
-                value={values.postalCode}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
+                  <ErrorMessage name="costPerDayPremium">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    name="costPerDayPremium"
+                    placeholder="Premium Rooms Per Day Cost"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-            <Form.Group>
-              <ErrorMessage name="stars">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="stars">Star rating</Form.Label>
+                  <ErrorMessage name="discountPercentage">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    name="discountPercentage"
+                    placeholder="Discount in percentage"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-              <Form.Control
-                name="stars"
-                type="number"
-                placeholder="Enter star rating"
-                value={values.stars}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
+                  <ErrorMessage name="totalNumberOfRooms">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    name="totalNumberOfRooms"
+                    placeholder="Total number of rooms"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-            <Form.Group>
-              <ErrorMessage name="costPerDayBudget">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="costPerDayBudget">
-                Per day cost of budget rooms
-              </Form.Label>
+                  <ErrorMessage name="numberOfBudgetRooms">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    name="numberOfBudgetRooms"
+                    placeholder="Number of budget rooms"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-              <Form.Control
-                name="costPerDayBudget"
-                type="number"
-                placeholder="Enter cost per day of budget rooms"
-                value={values.costPerDayBudget}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
+                  <ErrorMessage name="numberOfPremiumRooms">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    name="numberOfPremiumRooms"
+                    placeholder="Number of Premium rooms"
+                    autofocus
+                    onChange={handleChange}
+                  ></TextField>
 
-            <Form.Group>
-              <ErrorMessage name="costPerDayPremium">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="costPerDayPremium">
-                Per day cost of premium rooms
-              </Form.Label>
+                  <ErrorMessage name="mainImage">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="file"
+                    fullWidth
+                    name="mainImage"
+                    placeholder="Display image"
+                    autofocus
+                    onChange={multiFileUploadHandler}
+                  ></TextField>
 
-              <Form.Control
-                name="costPerDayPremium"
-                type="number"
-                placeholder="Enter cost per day of premium rooms"
-                value={values.costPerDayPremium}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
+                  <ErrorMessage name="extraImages">
+                    {(error) => (
+                      <Typography
+                        style={{ color: 'red', marginBottom: '-16px' }}
+                      >
+                        {error}
+                      </Typography>
+                    )}
+                  </ErrorMessage>
+                  <TextField
+                    margin="normal"
+                    type="file"
+                    fullWidth
+                    multiple
+                    name="extraImages"
+                    placeholder="Extra images"
+                    autofocus
+                    onChange={multiFileUploadHandler}
+                  ></TextField>
 
-            <Form.Group>
-              <ErrorMessage name="discountPercentage">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="discount">Discount in %</Form.Label>
+                  <div>
+                    <div
+                      style={{
+                        backgroundColor: 'rgba(35, 55, 75, 0.9)',
+                        color: '#fff',
+                        padding: '6px 12px',
+                        fontFamily: 'monospace',
+                        zIndex: 1,
+                        // position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        margin: '12px',
+                        borderRadius: '4px',
+                      }}
+                      className="sidebar"
+                    >
+                      Longitude: {lng} | Latitude: {lat}
+                    </div>
+                    <div
+                      ref={mapContainer}
+                      style={{ height: '500px' }}
+                      className="map-container"
+                    />
+                  </div>
 
-              <Form.Control
-                name="discountPercentage"
-                type="number"
-                placeholder="Enter discount in %"
-                value={values.discountPercentage}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-              <ErrorMessage name="totalNumberOfRooms">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="totalNumberOfRooms">
-                Total number of rooms
-              </Form.Label>
-
-              <Form.Control
-                name="totalNumberOfRooms"
-                type="number"
-                placeholder="Enter total number of rooms"
-                value={values.totalNumberOfRooms}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-              <ErrorMessage name="numberOfBudgetRooms">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="numberOfBudgetRooms">
-                Number of budget rooms
-              </Form.Label>
-
-              <Form.Control
-                name="numberOfBudgetRooms"
-                type="number"
-                placeholder="Enter number of budget rooms"
-                value={values.numberOfBudgetRooms}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-              <ErrorMessage name="numberOfPremiumRooms">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="numberOfPremiumRooms">
-                Number of premium rooms
-              </Form.Label>
-
-              <Form.Control
-                name="numberOfPremiumRooms"
-                type="number"
-                placeholder="Enter number of premium rooms"
-                value={values.numberOfPremiumRooms}
-                onChange={handleChange}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-              <ErrorMessage name="mainImage">
-                {(error) => <div style={{ color: 'red' }}>{error}</div>}
-              </ErrorMessage>
-              <Form.Label htmlFor="mainImage">Display image</Form.Label>
-
-              <Form.Control
-                name="mainImage"
-                type="file"
-                value={values.mainImage}
-                onChange={multiFileUploadHandler}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-              <Form.Label>Add extra images</Form.Label>
-              <Form.Control
-                name="extraImages"
-                type="file"
-                multiple
-                value={values.extraImages}
-                onChange={multiFileUploadHandler}
-              ></Form.Control>
-            </Form.Group>
-
-            <Button variant={'contained'} type={'submit'}>
-              Submit
-            </Button>
-          </FormikForm>
-        )}
-      </Formik>
-    </FormContainer>
+                  <Button variant={'contained'} type={'submit'}>
+                    Submit
+                  </Button>
+                </FormikForm>
+              )}
+            </Formik>
+            <Copyright sx={{ mt: 5 }} />
+          </Box>
+        </Box>
+      </Grid>
+    </Grid>
   );
 };

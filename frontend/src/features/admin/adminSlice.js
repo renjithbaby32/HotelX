@@ -24,14 +24,6 @@ const initialState = {
   markAllNotificationsAsRead: false,
 };
 
-const token = JSON.parse(localStorage.getItem('admin'))?.token;
-
-const config = {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-};
-
 export const adminLogin = createAsyncThunk(
   'admin/adminLogin',
   async ({ email, password }, { rejectWithValue }) => {
@@ -53,15 +45,20 @@ export const adminLogin = createAsyncThunk(
 
 export const getSalesReport = createAsyncThunk(
   'admin/getSalesReport',
-  async ({ startDate, endDate }, { rejectWithValue }) => {
+  async ({ startDate, endDate }, { rejectWithValue, getState }) => {
     try {
+      const token = getState().admin.admin.token;
       const { data } = await axios.post(
         '/api/v1/admin/salesreport',
         {
           startDate,
           endDate,
         },
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -76,14 +73,19 @@ export const getSalesReport = createAsyncThunk(
 
 export const getWeeklyStats = createAsyncThunk(
   'admin/getWeeklyStats',
-  async (startDate, { rejectWithValue }) => {
+  async (startDate, { rejectWithValue, getState }) => {
     try {
+      const token = getState().admin.admin.token;
       const { data } = await axios.post(
         '/api/v1/admin/weekly-stats',
         {
           startDate,
         },
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -98,9 +100,14 @@ export const getWeeklyStats = createAsyncThunk(
 
 export const getMonthlyStats = createAsyncThunk(
   'admin/getMonthlyStats',
-  async (undefined, { rejectWithValue }) => {
+  async (undefined, { rejectWithValue, getState }) => {
     try {
-      const { data } = await axios.get('/api/v1/admin/monthly-stats', config);
+      const token = getState().admin.admin.token;
+      const { data } = await axios.get('/api/v1/admin/monthly-stats', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -114,12 +121,14 @@ export const getMonthlyStats = createAsyncThunk(
 
 export const getSettlementStats = createAsyncThunk(
   'admin/getSettlementStats',
-  async (undefined, { rejectWithValue }) => {
+  async (undefined, { rejectWithValue, getState }) => {
     try {
-      const { data } = await axios.get(
-        '/api/v1/admin/settlement-stats',
-        config
-      );
+      const token = getState().admin.admin.token;
+      const { data } = await axios.get('/api/v1/admin/settlement-stats', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -133,9 +142,14 @@ export const getSettlementStats = createAsyncThunk(
 
 export const getUserList = createAsyncThunk(
   'admin/getUserList',
-  async (undefined, { rejectWithValue }) => {
+  async (undefined, { rejectWithValue, getState }) => {
     try {
-      const { data } = await axios.get('/api/v1/admin/userlist', config);
+      const token = getState().admin.admin.token;
+      const { data } = await axios.get('/api/v1/admin/userlist', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -149,9 +163,14 @@ export const getUserList = createAsyncThunk(
 
 export const getHotels = createAsyncThunk(
   'admin/getHotels',
-  async (undefined, { rejectWithValue }) => {
+  async (undefined, { rejectWithValue, getState }) => {
     try {
-      const { data } = await axios.get('/api/v1/admin/hotelslist', config);
+      const token = getState().admin.admin.token;
+      const { data } = await axios.get('/api/v1/admin/hotelslist', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -165,12 +184,14 @@ export const getHotels = createAsyncThunk(
 
 export const getHotelOwnersList = createAsyncThunk(
   'admin/getHotelOwnersList',
-  async (undefined, { rejectWithValue }) => {
+  async (undefined, { rejectWithValue, getState }) => {
     try {
-      const { data } = await axios.get(
-        '/api/v1/admin/hotel-owners-list',
-        config
-      );
+      const token = getState().admin.admin.token;
+      const { data } = await axios.get('/api/v1/admin/hotel-owners-list', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -184,12 +205,17 @@ export const getHotelOwnersList = createAsyncThunk(
 
 export const blockOrUnblockUser = createAsyncThunk(
   'admin/blockOrUnblockUser',
-  async (userId, { rejectWithValue }) => {
+  async (userId, { rejectWithValue, getState }) => {
     try {
+      const token = getState().admin.admin.token;
       const { data } = await axios.post(
         `/api/v1/admin/user/block-unblock/${userId}`,
         {},
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -204,12 +230,17 @@ export const blockOrUnblockUser = createAsyncThunk(
 
 export const blockOrUnblockHotel = createAsyncThunk(
   'admin/blockOrUnblockHotel',
-  async (hotelId, { rejectWithValue }) => {
+  async (hotelId, { rejectWithValue, getState }) => {
     try {
+      const token = getState().admin.admin.token;
       const { data } = await axios.post(
         `/api/v1/admin/hotel/block-unblock/${hotelId}`,
         {},
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -224,12 +255,17 @@ export const blockOrUnblockHotel = createAsyncThunk(
 
 export const blockOrUnblockHotelOwner = createAsyncThunk(
   'admin/blockOrUnblockHotelOwner',
-  async (hotelOwnerId, { rejectWithValue }) => {
+  async (hotelOwnerId, { rejectWithValue, getState }) => {
     try {
+      const token = getState().admin.admin.token;
       const { data } = await axios.post(
         `/api/v1/admin/hotel-owner/block-unblock/${hotelOwnerId}`,
         {},
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -244,9 +280,14 @@ export const blockOrUnblockHotelOwner = createAsyncThunk(
 
 export const getNotifications = createAsyncThunk(
   'admin/getNotifications',
-  async (undefined, { rejectWithValue }) => {
+  async (undefined, { rejectWithValue, getState }) => {
     try {
-      const { data } = await axios.get(`/api/v1/admin/notifications`, config);
+      const token = getState().admin.admin.token;
+      const { data } = await axios.get(`/api/v1/admin/notifications`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return data;
     } catch (error) {
       throw rejectWithValue(
@@ -260,12 +301,17 @@ export const getNotifications = createAsyncThunk(
 
 export const clearNotifications = createAsyncThunk(
   'admin/clearNotifications',
-  async (undefined, { rejectWithValue }) => {
+  async (undefined, { rejectWithValue, getState }) => {
     try {
+      const token = getState().admin.admin.token;
       const { data } = await axios.post(
         `/api/v1/admin/clear-notifications`,
         {},
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -280,15 +326,20 @@ export const clearNotifications = createAsyncThunk(
 
 export const addNotification = createAsyncThunk(
   'admin/addNotification',
-  async ({ title, description }, { rejectWithValue }) => {
+  async ({ title, description }, { rejectWithValue, getState }) => {
     try {
+      const token = getState().admin.admin.token;
       const { data } = await axios.post(
         `/api/v1/admin/add-notification`,
         {
           title,
           description,
         },
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -310,6 +361,7 @@ const adminSlice = createSlice({
     },
     clearAdmin: (state) => {
       state.admin = null;
+      localStorage.removeItem('admin');
     },
   },
   extraReducers: {

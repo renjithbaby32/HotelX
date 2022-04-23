@@ -31,20 +31,15 @@ import HotelsDashboardScreen from './screens/HotelsDashboardScreen';
 import HotelOwnersDashboardScreen from './screens/HotelOwnersDashboardScreen';
 import { SalesReportScreen } from './screens/SalesReportScreen';
 import Navbar2 from './layouts/dashboard/Navbar2';
-const adminURIS = [
-  '/admin',
-  '/admin/hotels',
-  '/admin/users',
-  '/admin/hotel-owners',
-  '/admin/sales-report',
-];
+import { DashboardScreenOfHotelOwner } from './screens/DashboardScreenOfHotelOwner';
+import { adminURIS, hotelOwnerURIS } from './constants';
 
 function App() {
   const { pathname } = useLocation();
 
   return (
     <>
-      {adminURIS.includes(pathname) ? (
+      {pathname.includes('/admin') ? (
         <ThemeProvider>
           <Routes>
             <Route path={'/admin'} element={<DashboardLayout />}>
@@ -68,13 +63,36 @@ function App() {
             </Route>
           </Routes>
         </ThemeProvider>
+      ) : pathname.includes('/hotel-owner') ? (
+        <ThemeProvider>
+          <Container maxWidth={'xl'}>
+            <Routes>
+              <Route path={'/hotel-owner'} element={<DashboardLayout />}>
+                <Route
+                  path={'/hotel-owner'}
+                  element={<DashboardScreenOfHotelOwner />}
+                ></Route>
+                <Route
+                  path={'/hotel-owner/hotels'}
+                  element={<HotelOwnerScreen />}
+                ></Route>
+                <Route
+                  path={'/hotel-owner/upcoming/:hotelid'}
+                  element={<UpcomingBookingsScreen />}
+                ></Route>
+                <Route
+                  path={'upcoming/:hotelid/:date'}
+                  element={<DateWiseCheckIns />}
+                ></Route>
+                <Route path={'add'} element={<AddHotelScreen />}></Route>
+              </Route>
+            </Routes>
+          </Container>
+        </ThemeProvider>
       ) : (
-        <Grid className='App'>
+        <Grid className="App">
           <NavBar />
-          {/* <ThemeProvider>
-            <Navbar2 />
-          </ThemeProvider> */}
-          <Container maxWidth='lg' sx={{ marginTop: '128px' }}>
+          <Container maxWidth="xl" sx={{ marginTop: '128px' }}>
             <Routes>
               <Route path={'/'} element={<HomeScreen />}></Route>
               <Route path={'/login'} element={<UserLogin />}></Route>
@@ -84,26 +102,13 @@ function App() {
               ></Route>
               <Route path={'/register'} element={<UserRegister />}></Route>
               <Route
-                path={'/hotel-owner-login'}
+                path={'/login-hotel-owner'}
                 element={<HotelOwnerLoginScreen />}
-              ></Route>
-              <Route
-                path={'/hotel-owner'}
-                element={<HotelOwnerScreen />}
-              ></Route>
-              <Route
-                path={'/hotel-owner/upcoming/:hotelid'}
-                element={<UpcomingBookingsScreen />}
-              ></Route>
-              <Route
-                path={'/hotel-owner/upcoming/:hotelid/:date'}
-                element={<DateWiseCheckIns />}
               ></Route>
               <Route
                 path={'/hotel-owner-register'}
                 element={<HotelOwnerRegisterScreen />}
               ></Route>
-              <Route path={'/hotel/add'} element={<AddHotelScreen />}></Route>
               <Route
                 path={'/booking/:bookingid'}
                 element={<BookingDetailsScreen />}
@@ -118,7 +123,6 @@ function App() {
                 path={'/login-admin'}
                 element={<AdminLoginScreen />}
               ></Route>
-              <Route path={'/dash'} element={<Dash />}></Route>
             </Routes>
           </Container>
         </Grid>

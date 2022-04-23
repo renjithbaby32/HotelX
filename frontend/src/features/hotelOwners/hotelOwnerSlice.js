@@ -9,6 +9,21 @@ const initialState = {
   checkInDetails: [],
   checkOutDetails: [],
   hotels: [],
+  weeklySales: null,
+  newBookings: null,
+  totalRoomsBooked: null,
+  budgetRoomsBooked: null,
+  premiumRoomsBooked: null,
+  amountPaid: null,
+  amountPending: null,
+};
+
+const token = JSON.parse(localStorage.getItem('hotelOwner'))?.token;
+
+const config = {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
 };
 
 export const hotelOwnerLogin = createAsyncThunk(
@@ -115,6 +130,29 @@ export const getHotels = createAsyncThunk(
   }
 );
 
+export const getWeeklyStats = createAsyncThunk(
+  'hotelOwner/getWeeklyStats',
+  async ({ startDate, hotelOwnerId }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        '/api/v1/hotel-owner/weekly-stats',
+        {
+          startDate,
+          hotelOwnerId,
+        },
+        config
+      );
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
 const hotelOwnerSlice = createSlice({
   name: 'hotelOwner',
   initialState,
@@ -124,6 +162,7 @@ const hotelOwnerSlice = createSlice({
     },
     clearHotelOwner: (state) => {
       state.hotelOwner = null;
+      localStorage.removeItem('hotelOwner');
     },
   },
   extraReducers: {
@@ -158,6 +197,13 @@ const hotelOwnerSlice = createSlice({
     },
     [getHotels.fulfilled]: (state, { payload }) => {
       return { ...state, hotels: payload };
+    },
+    [getWeeklyStats.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        newBookings: payload.newBookings,
+        weeklySales: payload.weeklySales,
+      };
     },
   },
 });
