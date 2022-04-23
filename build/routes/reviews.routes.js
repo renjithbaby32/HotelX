@@ -4,5 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const Router = express_1.default.Router();
-exports.default = Router;
+const reviews_controller_1 = require("../controllers/reviews.controller");
+const router = express_1.default.Router();
+router.route('/').post(reviews_controller_1.createHotelReview);
+exports.default = router;

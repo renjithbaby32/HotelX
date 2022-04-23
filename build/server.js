@@ -10,6 +10,7 @@ const cloudinary_1 = require("cloudinary");
 const cors_1 = __importDefault(require("cors"));
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
+const reviews_routes_1 = __importDefault(require("./routes/reviews.routes"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const hotel_routes_1 = __importDefault(require("./routes/hotel.routes"));
@@ -46,6 +47,7 @@ app.use(`${baseAPI}/hotel-owner`, hotelOwner_routes_1.default);
 app.use(`${baseAPI}/hotel`, hotel_routes_1.default);
 app.use(`${baseAPI}/booking`, booking_routes_1.default);
 app.use(`${baseAPI}/admin`, admin_routes_1.default);
+app.use(`${baseAPI}/reviews`, reviews_routes_1.default);
 const dirname = path_1.default.resolve();
 if (process.env.NODE_ENV === 'production') {
     app.use(express_1.default.static(path_1.default.join(dirname, '/frontend/build')));

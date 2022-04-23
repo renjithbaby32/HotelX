@@ -23,7 +23,6 @@ const reviewSchema = new mongoose_1.default.Schema({
     },
     comment: {
         type: String,
-        required: true,
     },
 }, {
     timestamps: true,

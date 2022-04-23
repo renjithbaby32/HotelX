@@ -17,4 +17,5 @@ router
 router
     .route('/gethotels/:hotelownerid')
     .get(authMiddleware_1.hotelOwnerProtectedRoute, hotelOwner_controller_1.getHotels);
+router.route('/weekly-stats').post(authMiddleware_1.hotelOwnerProtectedRoute, hotelOwner_controller_1.getWeeklyStats);
 exports.default = router;
