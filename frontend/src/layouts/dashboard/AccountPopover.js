@@ -44,7 +44,7 @@ export default function AccountPopover({ role }) {
     {
       label: 'Bookings',
       icon: 'eva:person-fill',
-      linkTo: `/bookings/${user._id}`,
+      linkTo: user ? `/bookings/${user._id}` : '/bookings',
     },
   ];
 

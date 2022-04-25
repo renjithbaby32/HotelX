@@ -43,6 +43,7 @@ const HotelDetailsScreen = () => {
   const [numberOfBudgetRooms, setNumberOfBudgetRooms] = useState(1);
   const [numberOfPremiumRooms, setNumberOfPremiumRooms] = useState(0);
   const [dateError, setDateError] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('Razorpay');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -72,6 +73,8 @@ const HotelDetailsScreen = () => {
   const selectImage = (url) => {
     setMainImage(url);
   };
+
+  const paymentMethodOptions = ['Razorpay', 'Paypal'];
 
   return (
     <>
@@ -371,6 +374,30 @@ const HotelDetailsScreen = () => {
                       >
                         <Typography>Book now</Typography>
                       </Button>
+                    </ListGroup.Item>
+                  )}
+
+                  {availability && (
+                    <ListGroup.Item>
+                      <TextField
+                        label="Select the payment method"
+                        select
+                        size="medium"
+                        fullWidth
+                        color="secondary"
+                        value={paymentMethod}
+                        onChange={(e) => {
+                          setPaymentMethod(e.target.value);
+                        }}
+                      >
+                        {paymentMethodOptions.map((paymentMethod) => {
+                          return (
+                            <MenuItem key={paymentMethod} value={paymentMethod}>
+                              {paymentMethod}
+                            </MenuItem>
+                          );
+                        })}
+                      </TextField>
                     </ListGroup.Item>
                   )}
                 </ListGroup>
