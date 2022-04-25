@@ -12,11 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-<<<<<<< HEAD
 exports.getReviews = exports.createHotelReview = void 0;
-=======
-exports.createHotelReview = void 0;
->>>>>>> 8791f4ec259fe1b384ba692bb1efcf94fce4bc02
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const reviews_model_1 = __importDefault(require("../models/reviews.model"));
 /**
@@ -44,7 +40,6 @@ exports.createHotelReview = (0, express_async_handler_1.default)((req, res) => _
     });
     res.status(201).json(review);
 }));
-<<<<<<< HEAD
 /**
  * @api {post} /api/v1/reviews/:hotelId
  * @apiName GetReviewsForHotel
@@ -56,5 +51,3 @@ exports.getReviews = (0, express_async_handler_1.default)((req, res) => __awaite
     });
     res.status(200).json(reviews);
 }));
-=======
->>>>>>> 8791f4ec259fe1b384ba692bb1efcf94fce4bc02

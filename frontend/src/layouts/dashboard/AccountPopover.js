@@ -15,19 +15,6 @@ import account from '../../_mock/account';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser } from '../../features/users/usersSlice';
 
-const USER_MENU_OPTIONS = [
-  {
-    label: 'Profile',
-    icon: 'eva:home-fill',
-    linkTo: '/profile',
-  },
-  {
-    label: 'Bookings',
-    icon: 'eva:person-fill',
-    linkTo: '/bookings/:userid',
-  },
-];
-
 export default function AccountPopover({ role }) {
   const anchorRef = useRef(null);
 
@@ -47,6 +34,19 @@ export default function AccountPopover({ role }) {
   const handleClose = () => {
     setOpen(null);
   };
+
+  const USER_MENU_OPTIONS = [
+    {
+      label: 'Profile',
+      icon: 'eva:home-fill',
+      linkTo: '/profile',
+    },
+    {
+      label: 'Bookings',
+      icon: 'eva:person-fill',
+      linkTo: `/bookings/${user._id}`,
+    },
+  ];
 
   return (
     <>
