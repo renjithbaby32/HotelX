@@ -1,11 +1,5 @@
 import './App.css';
-import { useEffect } from 'react';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-} from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { UserLogin } from './screens/UserLoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import UserRegister from './screens/UserRegisterScreen';
@@ -14,8 +8,7 @@ import HotelOwnerRegisterScreen from './screens/HotelOwnerRegisterScreen';
 import HotelDetailsScreen from './screens/HotelDetailsScreen';
 import { HotelOwnerScreen } from './screens/HotelOwnerScreen';
 import { AddHotelScreen } from './screens/AddHotelScreen';
-import { NavBar } from './screens/NavBar';
-import { Container, Grid } from '@mui/material';
+import { Container } from '@mui/material';
 import { BookingDetailsScreen } from './screens/BookingDetailsScreen';
 import { PaymentScreen } from './screens/PaymentScreen';
 import { BookingsScreen } from './screens/BookingsScreen';
@@ -24,15 +17,13 @@ import { DateWiseCheckIns } from './screens/DateWiseCheckIns';
 import { AdminLoginScreen } from './screens/AdminLoginScreen';
 import { AdminDashBoardScreen } from './screens/AdminDashBoardScreen';
 import DashboardLayout from './layouts/dashboard/index';
-import Dash from './screens/Dash';
 import ThemeProvider from './theme';
 import UserDashboardScreen from './screens/UserDashboardScreen';
 import HotelsDashboardScreen from './screens/HotelsDashboardScreen';
 import HotelOwnersDashboardScreen from './screens/HotelOwnersDashboardScreen';
 import { SalesReportScreen } from './screens/SalesReportScreen';
-import Navbar2 from './layouts/dashboard/Navbar2';
 import { DashboardScreenOfHotelOwner } from './screens/DashboardScreenOfHotelOwner';
-import { adminURIS, hotelOwnerURIS } from './constants';
+import { AddPromotionScreen } from './screens/AddPromotionScreen';
 
 function App() {
   const { pathname } = useLocation();
@@ -42,7 +33,7 @@ function App() {
       {pathname.includes('/admin') ? (
         <ThemeProvider>
           <Routes>
-            <Route path={'/admin'} element={<DashboardLayout />}>
+            <Route path={'/admin'} element={<DashboardLayout role={'admin'} />}>
               <Route path={'/admin'} element={<AdminDashBoardScreen />}></Route>
               <Route
                 path={'/admin/hotels'}
@@ -67,7 +58,10 @@ function App() {
         <ThemeProvider>
           <Container maxWidth={'xl'}>
             <Routes>
-              <Route path={'/hotel-owner'} element={<DashboardLayout />}>
+              <Route
+                path={'/hotel-owner'}
+                element={<DashboardLayout role={'hotelOwner'} />}
+              >
                 <Route
                   path={'/hotel-owner'}
                   element={<DashboardScreenOfHotelOwner />}
@@ -85,47 +79,52 @@ function App() {
                   element={<DateWiseCheckIns />}
                 ></Route>
                 <Route path={'add'} element={<AddHotelScreen />}></Route>
+                <Route
+                  path={'add-promotion'}
+                  element={<AddPromotionScreen />}
+                ></Route>
               </Route>
             </Routes>
           </Container>
         </ThemeProvider>
       ) : (
-        <Grid className="App">
-          <NavBar />
-          <Container maxWidth="xl" sx={{ marginTop: '128px' }}>
+        <ThemeProvider>
+          <Container maxWidth={'xl'}>
             <Routes>
-              <Route path={'/'} element={<HomeScreen />}></Route>
-              <Route path={'/login'} element={<UserLogin />}></Route>
-              <Route
-                path={'/hotel/:hotelid'}
-                element={<HotelDetailsScreen />}
-              ></Route>
-              <Route path={'/register'} element={<UserRegister />}></Route>
-              <Route
-                path={'/login-hotel-owner'}
-                element={<HotelOwnerLoginScreen />}
-              ></Route>
-              <Route
-                path={'/hotel-owner-register'}
-                element={<HotelOwnerRegisterScreen />}
-              ></Route>
-              <Route
-                path={'/booking/:bookingid'}
-                element={<BookingDetailsScreen />}
-              ></Route>
-              <Route
-                path={'/bookings/:userid'}
-                element={<BookingsScreen />}
-              ></Route>
-              <Route path={'/payment'} element={<PaymentScreen />}></Route>
+              <Route path={'/'} element={<DashboardLayout role={'user'} />}>
+                <Route path={'/'} element={<HomeScreen />}></Route>
+                <Route path={'/login'} element={<UserLogin />}></Route>
+                <Route
+                  path={'/hotel/:hotelid'}
+                  element={<HotelDetailsScreen />}
+                ></Route>
+                <Route path={'/register'} element={<UserRegister />}></Route>
+                <Route
+                  path={'/login-hotel-owner'}
+                  element={<HotelOwnerLoginScreen />}
+                ></Route>
+                <Route
+                  path={'/hotel-owner-register'}
+                  element={<HotelOwnerRegisterScreen />}
+                ></Route>
+                <Route
+                  path={'/booking/:bookingid'}
+                  element={<BookingDetailsScreen />}
+                ></Route>
+                <Route
+                  path={'/bookings/:userid'}
+                  element={<BookingsScreen />}
+                ></Route>
+                <Route path={'/payment'} element={<PaymentScreen />}></Route>
 
-              <Route
-                path={'/login-admin'}
-                element={<AdminLoginScreen />}
-              ></Route>
+                <Route
+                  path={'/login-admin'}
+                  element={<AdminLoginScreen />}
+                ></Route>
+              </Route>
             </Routes>
           </Container>
-        </Grid>
+        </ThemeProvider>
       )}
     </>
   );

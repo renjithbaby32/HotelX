@@ -23,6 +23,11 @@ import { differenceInDays, addDays } from 'date-fns';
 import { Card, Col, ListGroup, Row, Image } from 'react-bootstrap';
 import ReactImageMagnify from 'react-image-magnify';
 import { Message } from '../components/Message';
+import {
+  getHotel,
+  getReviews,
+  resetHotelReviewState,
+} from '../features/hotel/hotelSlice';
 
 const HotelDetailsScreen = () => {
   const { dates } = useSelector((state) => state.booking);
@@ -43,23 +48,24 @@ const HotelDetailsScreen = () => {
   const navigate = useNavigate();
 
   const { hotelid } = useParams();
-  const [hotel, setHotel] = useState({});
 
-  const hotels = useSelector((state) => state.hotel.hotels);
   let { availability, bookingDetails, error } = useSelector(
     (state) => state.booking
   );
 
   const { user } = useSelector((state) => state.user);
+  const { hotel, reviews } = useSelector((state) => state.hotel);
 
   useEffect(() => {
-    setHotel(hotels.find((hotel) => hotel._id === hotelid));
+    dispatch(getHotel(hotelid));
+    dispatch(getReviews(hotelid));
   }, []);
 
   useEffect(() => {
     return () => {
       dispatch(clearBookingDetails());
       dispatch(clearAvailalbility());
+      dispatch(resetHotelReviewState());
     };
   }, [dispatch]);
 
@@ -74,7 +80,7 @@ const HotelDetailsScreen = () => {
       )}
       {error ? (
         <Message variant="danger">{error}</Message>
-      ) : (
+      ) : hotel ? (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           {bookingDetails && (
             <Stack spacing={2}>
@@ -372,8 +378,78 @@ const HotelDetailsScreen = () => {
             </Col>
           </Row>
 
-          {/* <pre>{JSON.stringify(hotel, null, 2)}</pre> */}
+          {reviews && (
+            <Row>
+              <Col md={6}>
+                <h2>Reviews</h2>
+                {reviews.length === 0 && <Message>No Reviews</Message>}
+                <ListGroup variant="flush">
+                  {reviews.map((review) => (
+                    <ListGroup.Item key={review._id}>
+                      <strong>{review.name}</strong>
+                      <Rating value={review.rating} />
+                      <p>{review.createdAt.substring(0, 10)}</p>
+                      <p>{review.comment}</p>
+                    </ListGroup.Item>
+                  ))}
+                  <ListGroup.Item>
+                    <h2>Write a Customer Review</h2>
+                    {/* {successProductReview && (
+                    <Message variant="success">
+                      Review submitted successfully
+                    </Message>
+                  )} */}
+                    {/* {loadingProductReview && <Loader />} */}
+                    {/* {errorProductReview && (
+                    <Message variant="danger">{errorProductReview}</Message>
+                  )} */}
+                    {/* {userInfo ? (
+                    <Form onSubmit={submitHandler}>
+                      <Form.Group controlId="rating" className="py-1">
+                        <Form.Label>Rating</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={rating}
+                          onChange={(e) => setRating(e.target.value)}
+                        >
+                          <option value="">Select...</option>
+                          <option value="1">1 - Poor</option>
+                          <option value="2">2 - Fair</option>
+                          <option value="3">3 - Good</option>
+                          <option value="4">4 - Very Good</option>
+                          <option value="5">5 - Excellent</option>
+                        </Form.Control>
+                      </Form.Group>
+                      <Form.Group controlId="comment" className="py-1 pb-2">
+                        <Form.Label>Comment</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          row="3"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                        ></Form.Control>
+                      </Form.Group>
+                      <Button
+                        disabled={loadingProductReview}
+                        type="submit"
+                        variant="primary"
+                      >
+                        Submit
+                      </Button>
+                    </Form>
+                  ) : (
+                    <Message>
+                      Please <Link to="/login">sign in</Link> to write a review{' '}
+                    </Message>
+                  )} */}
+                  </ListGroup.Item>
+                </ListGroup>
+              </Col>
+            </Row>
+          )}
         </LocalizationProvider>
+      ) : (
+        <div>Loading...</div>
       )}
     </>
   );

@@ -2,7 +2,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const initialState = {
-  hotelOwner: null,
+  hotelOwner: localStorage.getItem('hotelOwner')
+    ? JSON.parse(localStorage.getItem('hotelOwner'))
+    : null,
   OTPSent: false,
   OTPVerified: false,
   upcomingBookings: [],
@@ -16,14 +18,7 @@ const initialState = {
   premiumRoomsBooked: null,
   amountPaid: null,
   amountPending: null,
-};
-
-const token = JSON.parse(localStorage.getItem('hotelOwner'))?.token;
-
-const config = {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
+  advertisement: null,
 };
 
 export const hotelOwnerLogin = createAsyncThunk(
@@ -132,15 +127,52 @@ export const getHotels = createAsyncThunk(
 
 export const getWeeklyStats = createAsyncThunk(
   'hotelOwner/getWeeklyStats',
-  async ({ startDate, hotelOwnerId }, { rejectWithValue }) => {
+  async ({ startDate, hotelOwnerId }, { rejectWithValue, getState }) => {
     try {
+      const { token } = getState().hotelOwner.hotelOwner;
       const { data } = await axios.post(
         '/api/v1/hotel-owner/weekly-stats',
         {
           startDate,
           hotelOwnerId,
         },
-        config
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
+export const addAdvertisement = createAsyncThunk(
+  'hotelOwner/getWeeklyStats',
+  async (
+    { hotel, description, numberOfHits },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const { token } = getState().hotelOwner.hotelOwner;
+      const { data } = await axios.post(
+        '/api/v1/feature',
+        {
+          description,
+          numberOfHits,
+          hotel,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       return data;
     } catch (error) {
@@ -163,6 +195,9 @@ const hotelOwnerSlice = createSlice({
     clearHotelOwner: (state) => {
       state.hotelOwner = null;
       localStorage.removeItem('hotelOwner');
+    },
+    clearAdvertisement: (state) => {
+      state.advertisement = null;
     },
   },
   extraReducers: {
@@ -205,8 +240,15 @@ const hotelOwnerSlice = createSlice({
         weeklySales: payload.weeklySales,
       };
     },
+    [addAdvertisement.fulfilled]: (state, { payload }) => {
+      return {
+        ...state,
+        advertisement: payload,
+      };
+    },
   },
 });
 
 export default hotelOwnerSlice.reducer;
-export const { setHotelOwner, clearHotelOwner } = hotelOwnerSlice.actions;
+export const { setHotelOwner, clearHotelOwner, clearAdvertisement } =
+  hotelOwnerSlice.actions;

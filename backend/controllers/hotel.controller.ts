@@ -106,7 +106,7 @@ export const addHotel = asyncHandler(async (req, res) => {
 export const getHotels = asyncHandler(async (req, res) => {
   const hotels = await Hotel.find({
     isActive: true,
-  });
+  }).limit(10);
 
   if (hotels) {
     res.status(200).json(hotels);
@@ -133,7 +133,7 @@ export const getNearbyHotels = asyncHandler(async (req, res) => {
         $maxDistance: 1000 * 100,
       },
     },
-  });
+  }).limit(10);
 
   if (hotels) {
     res.status(200).json(hotels);

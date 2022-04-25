@@ -27,9 +27,10 @@ export const UpcomingBookingsScreen = () => {
   const [endDate, setEndDate] = React.useState(addDays(new Date(), 14));
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { upcomingBookings } = useSelector((state) => state.hotelOwner);
-  const { hotel } = useSelector((state) => state.hotel);
-  const { hotelOwner } = useIdentity('hotelOwner');
+  const { upcomingBookings, hotelOwner } = useSelector(
+    (state) => state.hotelOwner
+  );
+  useIdentity('hotelOwner');
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
@@ -44,9 +45,6 @@ export const UpcomingBookingsScreen = () => {
   };
 
   React.useEffect(() => {
-    console.log(hotelOwner);
-    dispatch(getHotel(hotelid));
-
     dispatch(
       getUpComingBookings({
         startDate,

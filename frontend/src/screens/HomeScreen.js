@@ -3,21 +3,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addLocationToLocalStorage } from '../features/userLocation/userLocationSlice';
 import { getHotels, getNearbyHotels } from '../features/hotel/hotelSlice';
 import { HotelCard } from '../components/HotelCard';
-import { Row, Col } from 'react-bootstrap';
-import { useIdentity } from '../utils/identity';
 import { useNavigate } from 'react-router-dom';
 import { CheckAvailability } from '../components/CheckAvailability';
+import { Box, Grid } from '@mui/material';
+import { MainFeaturedPost } from '../components/MainFeaturedPost';
+import { HotelCardHomeScreen } from '../components/HotelCardHomeScreen';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { hotels, nearbyHotels } = useSelector((state) => state.hotel);
+  const { admin } = useSelector((state) => state.admin);
+  const { hotelOwner } = useSelector((state) => state.hotelOwner);
   const { totalAvailability } = useSelector((state) => state.booking);
-  const { hotelOwner } = useIdentity();
 
   useEffect(() => {
     if (hotelOwner) {
       navigate('/hotel-owner');
+    } else if (admin) {
+      navigate('/admin');
     }
   }, []);
 
@@ -47,44 +51,34 @@ const HomeScreen = () => {
   return (
     <div>
       <CheckAvailability />
+      <MainFeaturedPost />
+
       {totalAvailability ? (
-        <>
+        <Box my={3} p={3}>
           <h1>Hotels available on given dates</h1>
-          <Row>
+          <Grid container spacing={3}>
             {totalAvailability.map((hotel) => {
               return (
-                <Col key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
+                <Grid item key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
                   <HotelCard hotel={hotel} />
-                </Col>
+                </Grid>
               );
             })}
-          </Row>
-        </>
+          </Grid>
+        </Box>
       ) : (
-        <>
+        <Box my={3} p={3}>
           {nearbyHotels.length > 0 && <h1>Nearby hotels (within 100km)</h1>}
 
-          <Row>
-            {nearbyHotels.map((hotel) => {
-              return (
-                <Col key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
-                  <HotelCard hotel={hotel} />
-                </Col>
-              );
-            })}
-          </Row>
+          <Box my={3} p={3}>
+            <HotelCardHomeScreen hotels={nearbyHotels} />
+          </Box>
 
-          <h1>All hotels</h1>
-          <Row>
-            {hotels.map((hotel) => {
-              return (
-                <Col key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
-                  <HotelCard hotel={hotel} />
-                </Col>
-              );
-            })}
-          </Row>
-        </>
+          <Box my={3} p={3}>
+            <h1>All hotels</h1>
+            <HotelCardHomeScreen hotels={hotels} />
+          </Box>
+        </Box>
       )}
     </div>
   );

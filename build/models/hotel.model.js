@@ -103,7 +103,7 @@ const hotelSchema = new mongoose_1.default.Schema({
         type: Number,
         required: true,
         min: 0,
-        max: 10,
+        max: 5,
         default: 0,
     },
     isActive: {

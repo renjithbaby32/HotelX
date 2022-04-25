@@ -7,6 +7,8 @@ const initialState = {
   hotel: null,
   newHotelAdded: false,
   hotelReview: null,
+  reviews: [],
+  featuredPost: null,
 };
 
 export const addHotel = createAsyncThunk(
@@ -55,8 +57,16 @@ export const getHotels = createAsyncThunk('hotels/getHotels', async () => {
   return data;
 });
 
+export const getReviews = createAsyncThunk(
+  'hotels/getReviews',
+  async (hotelId) => {
+    const { data } = await axios.get(`/api/v1/reviews/${hotelId}`);
+    return data;
+  }
+);
+
 export const getHotel = createAsyncThunk('hotels/getHotel', async (hotelId) => {
-  const { data } = await axios.get(`api/v1/hotel/${hotelId}`);
+  const { data } = await axios.get(`/api/v1/hotel/${hotelId}`);
   return data;
 });
 
@@ -70,12 +80,23 @@ export const getNearbyHotels = createAsyncThunk(
   }
 );
 
+export const getFeaturedPost = createAsyncThunk(
+  'hotels/getFeaturedPost',
+  async () => {
+    const { data } = await axios.get(`api/v1/feature`);
+    return data;
+  }
+);
+
 const hotelSlice = createSlice({
   name: 'hotel',
   initialState,
   reducers: {
     resetNewHotelAddedState: (state) => {
       state.newHotelAdded = false;
+    },
+    resetHotelReviewState: (state) => {
+      state.reviews = null;
     },
   },
   extraReducers: {
@@ -97,8 +118,15 @@ const hotelSlice = createSlice({
     [addHotelReview.fulfilled]: (state, { payload }) => {
       return { ...state, hotelReview: payload };
     },
+    [getReviews.fulfilled]: (state, { payload }) => {
+      return { ...state, reviews: payload };
+    },
+    [getFeaturedPost.fulfilled]: (state, { payload }) => {
+      return { ...state, featuredPost: payload };
+    },
   },
 });
 
 export default hotelSlice.reducer;
-export const { resetNewHotelAddedState } = hotelSlice.actions;
+export const { resetNewHotelAddedState, resetHotelReviewState } =
+  hotelSlice.actions;

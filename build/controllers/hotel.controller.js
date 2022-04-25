@@ -93,7 +93,7 @@ exports.addHotel = (0, express_async_handler_1.default)((req, res) => __awaiter(
 exports.getHotels = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const hotels = yield hotel_model_1.default.find({
         isActive: true,
-    });
+    }).limit(10);
     if (hotels) {
         res.status(200).json(hotels);
     }
@@ -118,7 +118,7 @@ exports.getNearbyHotels = (0, express_async_handler_1.default)((req, res) => __a
                 $maxDistance: 1000 * 100,
             },
         },
-    });
+    }).limit(10);
     if (hotels) {
         res.status(200).json(hotels);
     }

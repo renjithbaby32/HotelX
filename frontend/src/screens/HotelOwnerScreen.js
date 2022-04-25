@@ -11,14 +11,14 @@ import { Button, Stack } from '@mui/material';
 export const HotelOwnerScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { hotelOwner } = useIdentity('hotelOwner');
-  const { hotels } = useSelector((state) => state.hotelOwner);
+  useIdentity('hotelOwner');
+  const { hotels, hotelOwner } = useSelector((state) => state.hotelOwner);
 
   useEffect(() => {
     if (hotelOwner) {
       dispatch(getHotels(hotelOwner));
     }
-  }, []);
+  }, [hotelOwner]);
 
   const viewMoreFunction = (hotelId) => {
     navigate(`/hotel-owner/upcoming/${hotelId}`);

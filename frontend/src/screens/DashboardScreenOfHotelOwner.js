@@ -30,8 +30,6 @@ export const DashboardScreenOfHotelOwner = () => {
     hotelOwner,
   } = useSelector((state) => state.hotelOwner);
 
-  console.log(hotelOwner);
-
   const theme = useTheme();
   const dispatch = useDispatch();
 

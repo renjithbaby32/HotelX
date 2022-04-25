@@ -1,6 +1,6 @@
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { Button, Grid, MenuItem, TextField } from '@mui/material';
+import { Box, Button, Grid, MenuItem, TextField } from '@mui/material';
 import { addDays, differenceInDays } from 'date-fns';
 import React from 'react';
 import { useDispatch } from 'react-redux';
@@ -33,17 +33,18 @@ export const CheckAvailability = () => {
   };
 
   return (
-    <div
-      style={{
-        marginTop: '50px',
-        marginBottom: '50px',
-        padding: '16px',
+    <Box
+      sx={{
+        marginX: '16vw',
       }}
+      my={3}
+      p={3}
     >
       <Grid container spacing={3}>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <Grid item xs={12} md={6} lg={3}>
             <DatePicker
+              sx={{ width: '100%' }}
               label="Check-in date"
               value={checkIn}
               onChange={(newValue) => {
@@ -61,8 +62,10 @@ export const CheckAvailability = () => {
               renderInput={(params) => <TextField {...params} />}
             />
           </Grid>
+
           <Grid item xs={12} md={6} lg={3}>
             <DatePicker
+              sx={{ width: '100%' }}
               label="Check-out date"
               value={checkOut}
               onChange={(newValue) => {
@@ -79,6 +82,7 @@ export const CheckAvailability = () => {
           </Grid>
           <Grid item xs={12} md={6} lg={3}>
             <TextField
+              fullWidth
               label="No. of rooms"
               select
               defaultValue="1"
@@ -101,16 +105,17 @@ export const CheckAvailability = () => {
           </Grid>
           <Grid item xs={12} md={6} lg={3}>
             <Button
+              fullWidth
               onClick={checkAvailabilityHandler}
               style={{ marginTop: '8px' }}
               size="large"
               variant="contained"
             >
-              Find Hotels
+              Search
             </Button>
           </Grid>
         </LocalizationProvider>
       </Grid>
-    </div>
+    </Box>
   );
 };

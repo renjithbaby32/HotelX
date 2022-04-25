@@ -13,7 +13,10 @@ export const PaymentScreen = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useIdentity();
+
+  const { user } = useSelector((state) => state.user);
+
+  useIdentity('user');
 
   const booking = JSON.parse(localStorage.getItem('booking'));
 

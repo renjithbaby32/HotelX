@@ -36,3 +36,17 @@ export const createHotelReview = asyncHandler(async (req, res) => {
 
   res.status(201).json(review);
 });
+
+/**
+ * @api {post} /api/v1/reviews/:hotelId
+ * @apiName GetReviewsForHotel
+ */
+export const getReviews = asyncHandler(async (req, res) => {
+  const { hotelId } = req.params;
+
+  const reviews = await Review.find({
+    hotel: hotelId,
+  });
+
+  res.status(200).json(reviews);
+});

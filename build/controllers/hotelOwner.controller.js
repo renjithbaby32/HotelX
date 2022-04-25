@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getHotels = exports.getUpComingBookings = exports.verifyOTP = exports.sendOTP = exports.registerHotelOwner = exports.authHotelOwner = void 0;
+exports.getWeeklyStats = exports.getHotels = exports.getUpComingBookings = exports.verifyOTP = exports.sendOTP = exports.registerHotelOwner = exports.authHotelOwner = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
 const hotelOwner_model_1 = __importDefault(require("../models/hotelOwner.model"));
@@ -20,6 +20,7 @@ const twilio_config_1 = require("../config/twilio.config");
 const dotenv_1 = require("dotenv");
 const date_fns_1 = require("date-fns");
 const hotel_model_1 = __importDefault(require("../models/hotel.model"));
+const booking_model_1 = __importDefault(require("../models/booking.model"));
 (0, dotenv_1.config)();
 /**
  * @api {post} /api/v1/hotel-owner/signin
@@ -174,4 +175,27 @@ exports.getHotels = (0, express_async_handler_1.default)((req, res) => __awaiter
     const hotelownerid = req.params.hotelownerid;
     const hotels = yield hotel_model_1.default.find({ owner: hotelownerid });
     res.status(200).json(hotels);
+}));
+/**
+ * @api {post} /api/v1/hotel-owner/weekly-stats
+ * @apiName WeeklyStats
+ */
+exports.getWeeklyStats = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, hotelOwnerId } = req.body;
+    let weeklyStats = {
+        weeklySales: 0,
+        newBookings: 0,
+    };
+    const weeklyBookings = yield booking_model_1.default.find({
+        createdAt: {
+            $gte: startDate,
+        },
+    }).populate('hotel', 'owner');
+    weeklyBookings.forEach((booking) => {
+        if (booking.hotel.owner.toString() === hotelOwnerId) {
+            weeklyStats.weeklySales += booking.amount;
+            weeklyStats.newBookings += 1;
+        }
+    });
+    res.json(weeklyStats);
 }));

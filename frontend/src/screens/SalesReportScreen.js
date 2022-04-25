@@ -160,7 +160,6 @@ export const SalesReportScreen = () => {
           columns={columns}
           title={'Sales Report'}
           options={{
-            filtering: true,
             pageSize: 10,
             pageSizeOptions: [10, 20, 30, 40, 50],
             exportButton: true,

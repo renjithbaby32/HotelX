@@ -299,7 +299,7 @@ export const getCheckOutDetailsOfTheDay = asyncHandler(async (req, res) => {
 });
 
 /**
- * @api {get} /api/v1/booking/payment/razorpay/:bookingid
+ * @api {get} /api/v1/booking/payment/razorpay/
  * @apiName PayWithRazorPay
  * Makes payment with RazorPay and marks the booking as paid
  */

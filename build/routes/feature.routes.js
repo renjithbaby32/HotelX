@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const reviews_controller_1 = require("../controllers/reviews.controller");
+const feature_controller_1 = require("../controllers/feature.controller");
 const router = express_1.default.Router();
-router.route('/').post(reviews_controller_1.createHotelReview);
-router.route('/:hotelId').get(reviews_controller_1.getReviews);
+router.route('/').get(feature_controller_1.getFeaturedPost).post(feature_controller_1.addFeaturedPost);
+router.route('/payment/razorpay').post(feature_controller_1.payWithRazorpay);
 exports.default = router;

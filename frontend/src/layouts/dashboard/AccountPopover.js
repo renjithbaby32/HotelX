@@ -12,15 +12,14 @@ import {
 } from '@mui/material';
 import MenuPopover from '../../components/MenuPopover';
 import account from '../../_mock/account';
-import { useIdentity } from '../../utils/identity';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { clearUser } from '../../features/users/usersSlice';
 
-const MENU_OPTIONS = [
+const USER_MENU_OPTIONS = [
   {
     label: 'Profile',
     icon: 'eva:home-fill',
-    linkTo: '/',
+    linkTo: '/profile',
   },
   {
     label: 'Bookings',
@@ -29,11 +28,14 @@ const MENU_OPTIONS = [
   },
 ];
 
-export default function AccountPopover() {
+export default function AccountPopover({ role }) {
   const anchorRef = useRef(null);
 
   const [open, setOpen] = useState(null);
-  const { user } = useIdentity();
+
+  const { user } = useSelector((state) => state.user);
+  const { hotelOwner } = useSelector((state) => state.hotelOwner);
+  const { admin } = useSelector((state) => state.admin);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -94,11 +96,33 @@ export default function AccountPopover() {
           </Box>
         )}
 
+        {hotelOwner && (
+          <Box sx={{ my: 1.5, px: 2.5 }}>
+            <Typography variant="subtitle2" noWrap>
+              {hotelOwner.name}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+              {hotelOwner.email}
+            </Typography>
+          </Box>
+        )}
+
+        {admin && (
+          <Box sx={{ my: 1.5, px: 2.5 }}>
+            <Typography variant="subtitle2" noWrap>
+              {admin.name}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+              {admin.email}
+            </Typography>
+          </Box>
+        )}
+
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         {user && (
           <Stack sx={{ p: 1 }}>
-            {MENU_OPTIONS.map((option) => (
+            {USER_MENU_OPTIONS.map((option) => (
               <MenuItem
                 key={option.label}
                 to={option.linkTo}
@@ -125,17 +149,16 @@ export default function AccountPopover() {
           >
             Logout
           </MenuItem>
-        ) : (
+        ) : role === 'user' ? (
           <MenuItem
-            onClick={() => {
-              handleClose();
-              navigate('/login');
-            }}
+            to="/login"
+            component={RouterLink}
+            onClick={handleClose}
             sx={{ m: 1 }}
           >
             Login
           </MenuItem>
-        )}
+        ) : null}
       </MenuPopover>
     </>
   );

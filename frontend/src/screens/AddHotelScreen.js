@@ -13,35 +13,14 @@ import {
   TextField,
 } from '@mui/material';
 import HotelIcon from '@mui/icons-material/Hotel';
-import { FormContainer } from '../components/FormContainer';
-import { Form } from 'react-bootstrap';
 import * as Yup from 'yup';
 import {
   addHotel,
   resetNewHotelAddedState,
 } from '../features/hotel/hotelSlice';
-import axios from 'axios';
 import { useIdentity } from '../utils/identity';
 import { addNotification } from '../features/admin/adminSlice';
 import mapboxgl from 'mapbox-gl';
-
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {'Copyright © '}
-      <Link color="inherit" to="/">
-        HotelX
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 mapboxgl.accessToken =
   'pk.eyJ1IjoicmVuaml0aGJhYnkiLCJhIjoiY2wyYmU4bWlrMDNlODNpbnV5MW9pZDMyNCJ9.5VetjmUxmKj4oaT21Yfh9g';
@@ -85,7 +64,10 @@ export const AddHotelScreen = () => {
   const [lat, setLat] = useState(9.93);
   const [zoom, setZoom] = useState(9);
 
-  const { hotelOwner } = useIdentity('hotelOwner');
+  useIdentity('hotelOwner');
+
+  const { hotelOwner } = useSelector((state) => state.hotelOwner);
+
   if (hotelOwner) {
     var { _id: hotelOwnerId } = hotelOwner;
   }
@@ -257,7 +239,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="state"
                     placeholder="State"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -276,7 +258,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="city"
                     placeholder="City"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -295,7 +277,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="postalCode"
                     placeholder="Postal Code"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -314,7 +296,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="stars"
                     placeholder="Star Rating (1-5)"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -333,7 +315,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="costPerDayBudget"
                     placeholder="Budget Rooms Per Day Cost"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -352,7 +334,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="costPerDayPremium"
                     placeholder="Premium Rooms Per Day Cost"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -371,7 +353,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="discountPercentage"
                     placeholder="Discount in percentage"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -390,7 +372,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="totalNumberOfRooms"
                     placeholder="Total number of rooms"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -409,7 +391,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="numberOfBudgetRooms"
                     placeholder="Number of budget rooms"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -428,7 +410,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="numberOfPremiumRooms"
                     placeholder="Number of Premium rooms"
-                    autofocus
+                    autoFocus
                     onChange={handleChange}
                   ></TextField>
 
@@ -447,7 +429,7 @@ export const AddHotelScreen = () => {
                     fullWidth
                     name="mainImage"
                     placeholder="Display image"
-                    autofocus
+                    autoFocus
                     onChange={multiFileUploadHandler}
                   ></TextField>
 
@@ -467,7 +449,7 @@ export const AddHotelScreen = () => {
                     multiple
                     name="extraImages"
                     placeholder="Extra images"
-                    autofocus
+                    autoFocus
                     onChange={multiFileUploadHandler}
                   ></TextField>
 
@@ -502,7 +484,6 @@ export const AddHotelScreen = () => {
                 </FormikForm>
               )}
             </Formik>
-            <Copyright sx={{ mt: 5 }} />
           </Box>
         </Box>
       </Grid>

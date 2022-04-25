@@ -11,6 +11,7 @@ import adminRouter from './routes/admin.routes';
 import hotelRouter from './routes/hotel.routes';
 import hotelOwnerRouter from './routes/hotelOwner.routes';
 import bookingRouter from './routes/booking.routes';
+import featureRouter from './routes/feature.routes';
 import morgan from 'morgan';
 import { errorHandler, notFound } from './middleware/errorMiddleWare';
 import connectDB from './config/db';
@@ -57,6 +58,7 @@ app.use(`${baseAPI}/hotel`, hotelRouter);
 app.use(`${baseAPI}/booking`, bookingRouter);
 app.use(`${baseAPI}/admin`, adminRouter);
 app.use(`${baseAPI}/reviews`, reviewsRouter);
+app.use(`${baseAPI}/feature`, featureRouter);
 
 const dirname = path.resolve();
 

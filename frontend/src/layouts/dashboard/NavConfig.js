@@ -52,6 +52,11 @@ export const navConfigForHotelOwner = [
     icon: getIcon('eva:plus-fill'),
   },
   {
+    title: 'promote your hotel',
+    path: '/hotel-owner/add-promotion',
+    icon: getIcon('eva:shake-fill'),
+  },
+  {
     title: 'log out',
     path: '/login',
     icon: getIcon('eva:power-fill'),

@@ -51,7 +51,8 @@ export default function DashboardSidebar({
   const { admin } = useSelector((state) => state.admin);
   const { hotelOwner } = useSelector((state) => state.hotelOwner);
 
-  const identity = role === 'admin' ? admin : hotelOwner;
+  const identity =
+    role === 'admin' ? admin : role === 'hotelOwner' ? hotelOwner : null;
 
   const isDesktop = useResponsive('up', 'lg');
 
@@ -72,28 +73,28 @@ export default function DashboardSidebar({
         },
       }}
     >
-      <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
-        <Logo />
-      </Box>
-
-      <Box sx={{ mb: 5, mx: 2.5 }}>
-        <Link underline="none" component={RouterLink} to="#">
-          <AccountStyle>
-            <Avatar src={account.photoURL} alt="photoURL" />
-            <Box sx={{ ml: 2 }}>
-              {identity && (
+      {identity && (
+        <Box sx={{ px: 2.5, py: 3 }}>
+          <Link underline="none" component={RouterLink} to="#">
+            <AccountStyle>
+              <Avatar src={account.photoURL} alt="photoURL" />
+              <Box sx={{ ml: 2 }}>
                 <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
                   {identity.name}
                 </Typography>
-              )}
-            </Box>
-          </AccountStyle>
-        </Link>
-      </Box>
+              </Box>
+            </AccountStyle>
+          </Link>
+        </Box>
+      )}
 
       <NavSection
         navConfig={
-          role === 'admin' ? navConfigForAdmin : navConfigForHotelOwner
+          role === 'admin'
+            ? navConfigForAdmin
+            : role === 'hotelOwner'
+            ? navConfigForHotelOwner
+            : null
         }
       />
 

@@ -6,39 +6,26 @@ import { setHotelOwner as setHotelOwnerAction } from '../features/hotelOwners/ho
 import { setAdmin as setAdminAction } from '../features/admin/adminSlice';
 
 export const useIdentity = (identity) => {
-  const [user, setUser] = useState(localStorage.getItem('user'));
-  const [hotelOwner, setHotelOwner] = useState(
-    localStorage.getItem('hotelOwner')
-  );
-  const [admin, setAdmin] = useState(localStorage.getItem('admin'));
+  const [user] = useState(localStorage.getItem('user'));
+  const [hotelOwner] = useState(localStorage.getItem('hotelOwner'));
+  const [admin] = useState(localStorage.getItem('admin'));
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (identity === 'user') {
       if (!user) {
         navigate('/login');
-      } else {
-        dispatch(setUserAction());
       }
     } else if (identity === 'hotelOwner') {
       if (!hotelOwner) {
         navigate('/login-hotel-owner');
-      } else {
-        dispatch(setHotelOwnerAction());
       }
     } else if (identity === 'admin') {
       if (!admin) {
         navigate('/login-admin');
-      } else {
-        dispatch(setAdminAction());
       }
     }
   }, []);
 
-  return {
-    user: user ? JSON.parse(user) : null,
-    hotelOwner: hotelOwner ? JSON.parse(hotelOwner) : null,
-    admin: admin ? JSON.parse(admin) : null,
-  };
+  return null;
 };
