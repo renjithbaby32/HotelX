@@ -14,11 +14,10 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
     },
     phone: {
       type: Number,
-      required: true,
       minLength: 10,
       maxLength: 10,
     },
@@ -26,6 +25,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
       default: false,
+    },
+    googleId: {
+      type: String,
+      required: false,
     },
   },
   {

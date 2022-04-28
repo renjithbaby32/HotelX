@@ -56,15 +56,7 @@ const HomeScreen = () => {
       {totalAvailability ? (
         <Box my={3} p={3}>
           <h1>Hotels available on given dates</h1>
-          <Grid container spacing={3}>
-            {totalAvailability.map((hotel) => {
-              return (
-                <Grid item key={hotel._id} xs={11} sm={6} md={6} lg={6} xl={4}>
-                  <HotelCard hotel={hotel} />
-                </Grid>
-              );
-            })}
-          </Grid>
+          <HotelCardHomeScreen hotels={totalAvailability} />
         </Box>
       ) : (
         <Box my={3} p={3}>

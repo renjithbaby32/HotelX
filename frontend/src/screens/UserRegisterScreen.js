@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { userLogin } from '../features/users/usersSlice';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { userRegister } from '../features/users/usersSlice';
@@ -13,22 +12,22 @@ import {
   Grid,
   CssBaseline,
   Avatar,
-  Alert,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Formik, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { Login } from '../components/GoogleLogin';
 
 function Copyright(props) {
   return (
     <Typography
-      variant='body2'
-      color='text.secondary'
-      align='center'
+      variant="body2"
+      color="text.secondary"
+      align="center"
       {...props}
     >
       {'Copyright © '}
-      <Link color='inherit' to='/'>
+      <Link color="inherit" to="/">
         HotelX
       </Link>{' '}
       {new Date().getFullYear()}
@@ -67,7 +66,7 @@ const UserRegisterScreen = () => {
   }, [user]);
 
   return (
-    <Grid container component='main'>
+    <Grid container component="main">
       <CssBaseline />
       <Grid
         item
@@ -98,7 +97,7 @@ const UserRegisterScreen = () => {
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component='h1' variant='h5'>
+          <Typography component="h1" variant="h5">
             Register for a free account
           </Typography>
           <Box sx={{ mt: 1 }}>
@@ -110,68 +109,68 @@ const UserRegisterScreen = () => {
             >
               {({ values, handleChange, handleBlur }) => (
                 <Form>
-                  <ErrorMessage name='name'>
+                  <ErrorMessage name="name">
                     {(error) => (
                       <Typography style={{ color: 'red' }}>{error}</Typography>
                     )}
                   </ErrorMessage>
                   <TextField
-                    margin='normal'
+                    margin="normal"
                     required
                     fullWidth
-                    id='name'
-                    label='Name'
-                    name='name'
+                    id="name"
+                    label="Name"
+                    name="name"
                     autoFocus
                     onChange={handleChange}
                   />
 
-                  <ErrorMessage name='email'>
+                  <ErrorMessage name="email">
                     {(error) => (
                       <Typography style={{ color: 'red' }}>{error}</Typography>
                     )}
                   </ErrorMessage>
                   <TextField
-                    margin='normal'
+                    margin="normal"
                     required
                     fullWidth
-                    id='email'
-                    label='Email Address'
-                    name='email'
-                    autoComplete='email'
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
                     autoFocus
                     onChange={handleChange}
                   />
-                  <ErrorMessage name='phone'>
+                  <ErrorMessage name="phone">
                     {(error) => (
                       <Typography style={{ color: 'red' }}>{error}</Typography>
                     )}
                   </ErrorMessage>
                   <TextField
-                    margin='normal'
+                    margin="normal"
                     type={'number'}
                     required
                     fullWidth
-                    id='phone'
-                    label='Phone number'
-                    name='phone'
+                    id="phone"
+                    label="Phone number"
+                    name="phone"
                     autoFocus
                     onChange={handleChange}
                   />
-                  <ErrorMessage name='password'>
+                  <ErrorMessage name="password">
                     {(error) => (
                       <Typography style={{ color: 'red' }}>{error}</Typography>
                     )}
                   </ErrorMessage>
                   <TextField
-                    margin='normal'
+                    margin="normal"
                     required
                     fullWidth
-                    name='password'
-                    label='Password'
-                    type='password'
-                    id='password'
-                    autoComplete='current-password'
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
                     onChange={handleChange}
                     helperText={
                       !values.password
@@ -180,9 +179,9 @@ const UserRegisterScreen = () => {
                     }
                   />
                   <Button
-                    type='submit'
+                    type="submit"
                     fullWidth
-                    variant='contained'
+                    variant="contained"
                     sx={{ mt: 3, mb: 2 }}
                   >
                     Register
@@ -190,6 +189,10 @@ const UserRegisterScreen = () => {
                 </Form>
               )}
             </Formik>
+            <Box display={'flex'} justifyContent={'center'}>
+              <Login action={'signup'} />
+            </Box>
+
             <Copyright sx={{ mt: 5 }} />
           </Box>
         </Box>

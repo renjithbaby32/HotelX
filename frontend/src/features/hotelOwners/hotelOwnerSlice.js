@@ -7,6 +7,7 @@ const initialState = {
     : null,
   OTPSent: false,
   OTPVerified: false,
+  OTPVerificationFailed: false,
   upcomingBookings: [],
   checkInDetails: [],
   checkOutDetails: [],
@@ -55,12 +56,20 @@ export const sendOTP = createAsyncThunk(
 
 export const verifyOTP = createAsyncThunk(
   'hotelOwners/verifyOTP',
-  async ({ phone, code }) => {
-    const { data } = await axios.post(
-      `/api/v1/hotel-owner/verifyOTP/${phone}`,
-      { code }
-    );
-    return data;
+  async ({ phone, code }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `/api/v1/hotel-owner/verifyOTP/${phone}`,
+        { code }
+      );
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
   }
 );
 
@@ -154,7 +163,7 @@ export const getWeeklyStats = createAsyncThunk(
 );
 
 export const addAdvertisement = createAsyncThunk(
-  'hotelOwner/getWeeklyStats',
+  'hotelOwner/addAdvertisement',
   async (
     { hotel, description, numberOfHits },
     { rejectWithValue, getState }
@@ -219,7 +228,10 @@ const hotelOwnerSlice = createSlice({
       return { ...state, OTPSent: true };
     },
     [verifyOTP.fulfilled]: (state, { payload }) => {
-      return { ...state, OTPVerified: true };
+      return { ...state, OTPVerificationFailed: false, OTPVerified: true };
+    },
+    [verifyOTP.rejected]: (state, { payload }) => {
+      return { ...state, OTPVerificationFailed: true };
     },
     [getUpComingBookings.fulfilled]: (state, { payload }) => {
       return { ...state, upcomingBookings: payload };

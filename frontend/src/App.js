@@ -104,7 +104,7 @@ function App() {
                   element={<HotelOwnerLoginScreen />}
                 ></Route>
                 <Route
-                  path={'/hotel-owner-register'}
+                  path={'/register-hotel-owner'}
                   element={<HotelOwnerRegisterScreen />}
                 ></Route>
                 <Route

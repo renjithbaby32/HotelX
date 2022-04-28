@@ -28,6 +28,24 @@ export const userLogin = createAsyncThunk(
   }
 );
 
+export const userLoginWithGoogle = createAsyncThunk(
+  'users/userLoginWithGoogle',
+  async (tokenId, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post('/api/v1/user/signin/google', {
+        tokenId,
+      });
+      return data;
+    } catch (error) {
+      throw rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+    }
+  }
+);
+
 export const userRegister = createAsyncThunk(
   'users/userRegister',
   async ({ name, phone, email, password }) => {
@@ -36,6 +54,16 @@ export const userRegister = createAsyncThunk(
       phone,
       email,
       password,
+    });
+    return data;
+  }
+);
+
+export const userRegisterWithGoogle = createAsyncThunk(
+  'users/userRegisterWithGoogle',
+  async (tokenId) => {
+    const { data } = await axios.post('/api/v1/user/signup/google', {
+      tokenId,
     });
     return data;
   }
@@ -69,6 +97,13 @@ const userSlice = createSlice({
       return { ...state, user: payload, loginError: false };
     },
     [userLogin.rejected]: (state, { payload }) => {
+      return { ...state, loginError: true, loginErrorMessage: payload };
+    },
+    [userLoginWithGoogle.fulfilled]: (state, { payload }) => {
+      localStorage.setItem('user', JSON.stringify(payload));
+      return { ...state, user: payload, loginError: false };
+    },
+    [userLoginWithGoogle.rejected]: (state, { payload }) => {
       return { ...state, loginError: true, loginErrorMessage: payload };
     },
     [userRegister.pending]: () => {

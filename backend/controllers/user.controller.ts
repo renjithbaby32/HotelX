@@ -2,6 +2,8 @@ import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken';
 import User from '../models/user.model';
 import Booking from '../models/booking.model';
+import { OAuth2Client } from 'google-auth-library';
+const authClient = new OAuth2Client(`${process.env.GOOGLE_CLIENT_ID}`);
 
 /**
  * @api {post} /api/v1/user/signin
@@ -33,6 +35,58 @@ export const authUser = asyncHandler(async (req, res) => {
     res.status(401);
     throw new Error('Invalid email or password');
   }
+});
+
+export const authUserWithGoogle = asyncHandler(async (req, res) => {
+  const { tokenId } = req.body;
+
+  const user = await User.findOne({ googleId: tokenId });
+
+  if (user && user.isBlocked) {
+    res.status(401);
+    throw new Error('You are blocked!');
+  }
+
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      googleId: user.googleId,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(401);
+    throw new Error('Invalid email or password');
+  }
+});
+
+/**
+ * @api {post} /api/v1/user/signup/google
+ * @apiName UserSignInWithGoogle
+ * Request body contains tokenId.
+ */
+
+export const registerUserWithGoogle = asyncHandler(async (req, res) => {
+  const { tokenId } = req.body;
+  console.log(process.env.GOOGLE_CLIENT_ID);
+  const ticket = await authClient.verifyIdToken({
+    idToken: tokenId,
+    audience: `${process.env.GOOGLE_CLIENT_ID}`,
+  });
+
+  const name = ticket.getPayload()?.name;
+  const email = ticket.getPayload()?.email;
+  const googleId = ticket.getUserId();
+
+  const newUser = await User.create({
+    name,
+    email,
+    googleId,
+  });
+
+  res.json(newUser);
 });
 
 /**

@@ -14,6 +14,14 @@ import MenuPopover from '../../components/MenuPopover';
 import account from '../../_mock/account';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser } from '../../features/users/usersSlice';
+import { useGoogleLogout } from 'react-google-login';
+
+const onLogoutSuccess = (res) => {};
+
+const onFailure = () => {};
+
+const clientId =
+  '734684227813-r4sspaq2g6mjmh3if4g52q7hv6e2rkdo.apps.googleusercontent.com';
 
 export default function AccountPopover({ role }) {
   const anchorRef = useRef(null);
@@ -34,6 +42,12 @@ export default function AccountPopover({ role }) {
   const handleClose = () => {
     setOpen(null);
   };
+
+  const { signOut } = useGoogleLogout({
+    clientId,
+    onLogoutSuccess,
+    onFailure,
+  });
 
   const USER_MENU_OPTIONS = [
     {
@@ -140,9 +154,12 @@ export default function AccountPopover({ role }) {
         {user ? (
           <MenuItem
             onClick={() => {
+              if (user.googleId) {
+                signOut();
+              }
               handleClose();
-              dispatch(clearUser());
               localStorage.removeItem('user');
+              dispatch(clearUser());
               navigate('/login');
             }}
             sx={{ m: 1 }}

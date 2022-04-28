@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogin } from '../features/users/usersSlice';
@@ -19,6 +19,7 @@ import { Formik, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { clearHotelOwner } from '../features/hotelOwners/hotelOwnerSlice';
 import { clearAdmin } from '../features/admin/adminSlice';
+import { Login } from '../components/GoogleLogin';
 
 function Copyright(props) {
   return (
@@ -165,6 +166,9 @@ export const UserLogin = () => {
                 </Form>
               )}
             </Formik>
+            <Box padding={'16px'} display={'flex'} justifyContent={'center'}>
+              <Login action={'login'} />
+            </Box>
             <Grid container flexDirection={'column'}>
               <Grid item xs>
                 <Link
