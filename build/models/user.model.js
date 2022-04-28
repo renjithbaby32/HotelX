@@ -26,11 +26,10 @@ const userSchema = new mongoose_1.default.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
     },
     phone: {
         type: Number,
-        required: true,
         minLength: 10,
         maxLength: 10,
     },
@@ -38,6 +37,10 @@ const userSchema = new mongoose_1.default.Schema({
         type: Boolean,
         required: true,
         default: false,
+    },
+    googleId: {
+        type: String,
+        required: false,
     },
 }, {
     timestamps: true,

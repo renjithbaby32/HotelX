@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBookings = exports.registerUser = exports.authUser = void 0;
+exports.getBookings = exports.registerUser = exports.registerUserWithGoogle = exports.authUserWithGoogle = exports.authUser = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
 const user_model_1 = __importDefault(require("../models/user.model"));
 const booking_model_1 = __importDefault(require("../models/booking.model"));
+const google_auth_library_1 = require("google-auth-library");
+const authClient = new google_auth_library_1.OAuth2Client(`${process.env.GOOGLE_CLIENT_ID}`);
 /**
  * @api {post} /api/v1/user/signin
  * @apiName UserSignIn
@@ -44,6 +46,51 @@ exports.authUser = (0, express_async_handler_1.default)((req, res) => __awaiter(
         res.status(401);
         throw new Error('Invalid email or password');
     }
+}));
+exports.authUserWithGoogle = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { tokenId } = req.body;
+    const user = yield user_model_1.default.findOne({ googleId: tokenId });
+    if (user && user.isBlocked) {
+        res.status(401);
+        throw new Error('You are blocked!');
+    }
+    if (user) {
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            googleId: user.googleId,
+            token: (0, generateToken_1.default)(user._id),
+        });
+    }
+    else {
+        res.status(401);
+        throw new Error('Invalid email or password');
+    }
+}));
+/**
+ * @api {post} /api/v1/user/signup/google
+ * @apiName UserSignInWithGoogle
+ * Request body contains tokenId.
+ */
+exports.registerUserWithGoogle = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const { tokenId } = req.body;
+    console.log(process.env.GOOGLE_CLIENT_ID);
+    const ticket = yield authClient.verifyIdToken({
+        idToken: tokenId,
+        audience: `${process.env.GOOGLE_CLIENT_ID}`,
+    });
+    const name = (_a = ticket.getPayload()) === null || _a === void 0 ? void 0 : _a.name;
+    const email = (_b = ticket.getPayload()) === null || _b === void 0 ? void 0 : _b.email;
+    const googleId = ticket.getUserId();
+    const newUser = yield user_model_1.default.create({
+        name,
+        email,
+        googleId,
+    });
+    res.json(newUser);
 }));
 /**
  * @api {post} /api/v1/user/signup
