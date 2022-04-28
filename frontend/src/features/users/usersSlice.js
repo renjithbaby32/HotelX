@@ -113,6 +113,10 @@ const userSlice = createSlice({
       localStorage.setItem('user', JSON.stringify(payload));
       return { ...state, user: payload };
     },
+    [userRegisterWithGoogle.fulfilled]: (state, { payload }) => {
+      localStorage.setItem('user', JSON.stringify(payload));
+      return { ...state, user: payload };
+    },
     [getBookings.pending]: () => {
       console.log('fetching bookings pending');
     },
