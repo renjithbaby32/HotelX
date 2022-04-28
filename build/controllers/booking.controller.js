@@ -19,6 +19,7 @@ const booking_model_1 = __importDefault(require("../models/booking.model"));
 const date_fns_1 = require("date-fns");
 const razorpay_config_1 = require("../config/razorpay.config");
 const shortid_1 = __importDefault(require("shortid"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
 /**
  * @api {post} /api/v1/booking/availability/:hotelid
  * @apiName HotelAvailability
@@ -153,6 +154,25 @@ exports.bookRooms = (0, express_async_handler_1.default)((req, res) => __awaiter
             yield hotel.save();
         }
     }
+    let testAccount = yield nodemailer_1.default.createTestAccount();
+    let transporter = nodemailer_1.default.createTransport({
+        name: 'smtp.ethereal.email',
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+            user: testAccount.user,
+            pass: testAccount.pass, // generated ethereal password
+        },
+    });
+    // send mail with defined transport object
+    let info = yield transporter.sendMail({
+        from: '"Fred Foo 👻" <foo@example.com>',
+        to: 'renjithbabyofficial@gmail.com, baz@example.com',
+        subject: 'Hello ✔',
+        text: 'Hello world?',
+        html: '<b>Hello world?</b>', // html body
+    });
     res.json(booking);
 }));
 /**
