@@ -34,7 +34,7 @@ export const Login = ({ action }) => {
         }
         onSuccess={onSuccess}
         onFailure={onFailure}
-        cookiePolicy={'single_host_origin'}
+        // cookiePolicy={'single_host_origin'}
         style={{ marginTop: '100px' }}
         // isSignedIn={true}
       />

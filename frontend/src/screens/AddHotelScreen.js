@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Formik, Form as FormikForm, ErrorMessage } from 'formik';
 import {
   Avatar,
@@ -16,30 +16,17 @@ import HotelIcon from '@mui/icons-material/Hotel';
 import * as Yup from 'yup';
 import {
   addHotel,
+  editHotel,
   resetNewHotelAddedState,
+  resetNewHotelEditedState,
 } from '../features/hotel/hotelSlice';
 import { useIdentity } from '../utils/identity';
 import { addNotification } from '../features/admin/adminSlice';
 import mapboxgl from 'mapbox-gl';
+import { getHotel } from '../features/hotel/hotelSlice';
 
 mapboxgl.accessToken =
   'pk.eyJ1IjoicmVuaml0aGJhYnkiLCJhIjoiY2wyYmU4bWlrMDNlODNpbnV5MW9pZDMyNCJ9.5VetjmUxmKj4oaT21Yfh9g';
-
-const initialValues = {
-  name: '',
-  state: '',
-  city: '',
-  postalCode: '',
-  stars: '',
-  costPerDayBudget: '',
-  costPerDayPremium: '',
-  discountPercentage: 0,
-  totalNumberOfRooms: 0,
-  hasPremiumRooms: true,
-  numberOfBudgetRooms: 0,
-  numberOfPremiumRooms: 0,
-  coordinates: [0, 0],
-};
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Required'),
@@ -58,15 +45,64 @@ const validationSchema = Yup.object({
 });
 
 export const AddHotelScreen = () => {
+  const { hotelid } = useParams();
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [lng, setLng] = useState(76.26);
   const [lat, setLat] = useState(9.93);
   const [zoom, setZoom] = useState(9);
 
+  const [hotelDetails, setHotelDetails] = useState({});
+
+  const initialValues = {
+    name: 'Bad',
+    state: 'Kerala',
+    city: '',
+    postalCode: '',
+    stars: '',
+    costPerDayBudget: '',
+    costPerDayPremium: '',
+    discountPercentage: 0,
+    totalNumberOfRooms: 0,
+    hasPremiumRooms: true,
+    numberOfBudgetRooms: 0,
+    numberOfPremiumRooms: 0,
+    coordinates: [0, 0],
+  };
+
+  useEffect(() => {
+    if (hotelid) {
+      dispatch(getHotel(hotelid));
+    }
+  }, []);
+
   useIdentity('hotelOwner');
 
   const { hotelOwner } = useSelector((state) => state.hotelOwner);
+  const { hotel } = useSelector((state) => state.hotel);
+
+  useEffect(() => {
+    if (hotel) {
+      setHotelDetails({
+        name: hotel.name,
+        state: hotel.state,
+        city: hotel.city,
+        postalCode: hotel.postalCode,
+        stars: hotel.stars,
+        costPerDayBudget: hotel.costPerDayBudget,
+        costPerDayPremium: hotel.costPerDayPremium,
+        discountPercentage: hotel.discountPercentage,
+        totalNumberOfRooms: hotel.totalNumberOfRooms,
+        hasPremiumRooms: hotel.hasPremiumRooms,
+        numberOfBudgetRooms: hotel.numberOfBudgetRooms,
+        numberOfPremiumRooms: hotel.numberOfPremiumRooms,
+        coordinates: [
+          hotel.coordinates.coordinates[0],
+          hotel.coordinates.coordinates[1],
+        ],
+      });
+    }
+  }, [hotel]);
 
   if (hotelOwner) {
     var { _id: hotelOwnerId } = hotelOwner;
@@ -74,7 +110,7 @@ export const AddHotelScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { newHotelAdded } = useSelector((state) => state.hotel);
+  const { newHotelAdded, hotelEdited } = useSelector((state) => state.hotel);
 
   const [extraImages, setExtraImages] = useState([]);
   const [mainImage, setMainImage] = useState('');
@@ -106,12 +142,15 @@ export const AddHotelScreen = () => {
         })
       );
       navigate('/hotel-owner');
+    } else if (hotelEdited) {
+      navigate('/hotel-owner');
     }
 
     return () => {
       dispatch(resetNewHotelAddedState());
+      dispatch(resetNewHotelEditedState());
     };
-  }, [newHotelAdded]);
+  }, [newHotelAdded, hotelEdited]);
 
   const onSubmit = ({
     name,
@@ -127,6 +166,23 @@ export const AddHotelScreen = () => {
     numberOfPremiumRooms,
     coordinates,
   }) => {
+    console.log(
+      name,
+      state,
+      city,
+      postalCode,
+      stars,
+      costPerDayBudget,
+      costPerDayPremium,
+      discountPercentage,
+      totalNumberOfRooms,
+      numberOfBudgetRooms,
+      numberOfPremiumRooms,
+      coordinates,
+      mainImage,
+      extraImages
+    );
+
     const formData = new FormData();
     formData.set('name', name);
     formData.set('state', state);
@@ -139,14 +195,18 @@ export const AddHotelScreen = () => {
     formData.set('totalNumberOfRooms', totalNumberOfRooms);
     formData.set('numberOfBudgetRooms', numberOfBudgetRooms);
     formData.set('numberOfPremiumRooms', numberOfPremiumRooms);
-    formData.set('mainImage', mainImage);
     formData.set('coordinates', [lng, lat]);
     formData.set('hotelOwnerId', hotelOwnerId);
-    extraImages.forEach((image) => {
-      formData.append('extraImages', image);
-    });
-
-    dispatch(addHotel(formData));
+    if (!hotelid) {
+      formData.set('mainImage', mainImage);
+      extraImages.forEach((image) => {
+        formData.append('extraImages', image);
+      });
+      dispatch(addHotel(formData));
+    } else {
+      formData.set('hotelId', hotelid);
+      dispatch(editHotel(formData));
+    }
   };
 
   const multiFileUploadHandler = async (e) => {
@@ -194,14 +254,15 @@ export const AddHotelScreen = () => {
             <HotelIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Register a Hotel
+            {hotel ? 'Edit Hotel' : 'Add Hotel'}
           </Typography>
           <Box sx={{ mt: 1 }}>
             {/* {loginError && <Alert severity='error'>{loginErrorMessage}</Alert>} */}
             <Formik
-              initialValues={initialValues}
+              initialValues={hotel ? hotelDetails : initialValues}
               onSubmit={onSubmit}
               validationSchema={validationSchema}
+              enableReinitialize
             >
               {({ values, handleChange, handleBlur }) => (
                 <FormikForm>
@@ -221,6 +282,7 @@ export const AddHotelScreen = () => {
                     name="name"
                     placeholder="Enter name of the hotel"
                     autoFocus
+                    value={values.name}
                     onChange={handleChange}
                   ></TextField>
 
@@ -240,6 +302,7 @@ export const AddHotelScreen = () => {
                     name="state"
                     placeholder="State"
                     autoFocus
+                    value={values.state}
                     onChange={handleChange}
                   ></TextField>
 
@@ -259,6 +322,7 @@ export const AddHotelScreen = () => {
                     name="city"
                     placeholder="City"
                     autoFocus
+                    value={values.city}
                     onChange={handleChange}
                   ></TextField>
 
@@ -278,6 +342,7 @@ export const AddHotelScreen = () => {
                     name="postalCode"
                     placeholder="Postal Code"
                     autoFocus
+                    value={values.postalCode}
                     onChange={handleChange}
                   ></TextField>
 
@@ -297,6 +362,7 @@ export const AddHotelScreen = () => {
                     name="stars"
                     placeholder="Star Rating (1-5)"
                     autoFocus
+                    value={values.stars}
                     onChange={handleChange}
                   ></TextField>
 
@@ -316,6 +382,7 @@ export const AddHotelScreen = () => {
                     name="costPerDayBudget"
                     placeholder="Budget Rooms Per Day Cost"
                     autoFocus
+                    value={values.costPerDayBudget}
                     onChange={handleChange}
                   ></TextField>
 
@@ -335,6 +402,7 @@ export const AddHotelScreen = () => {
                     name="costPerDayPremium"
                     placeholder="Premium Rooms Per Day Cost"
                     autoFocus
+                    value={values.costPerDayPremium}
                     onChange={handleChange}
                   ></TextField>
 
@@ -354,6 +422,7 @@ export const AddHotelScreen = () => {
                     name="discountPercentage"
                     placeholder="Discount in percentage"
                     autoFocus
+                    value={values.discountPercentage}
                     onChange={handleChange}
                   ></TextField>
 
@@ -373,6 +442,7 @@ export const AddHotelScreen = () => {
                     name="totalNumberOfRooms"
                     placeholder="Total number of rooms"
                     autoFocus
+                    value={values.totalNumberOfRooms}
                     onChange={handleChange}
                   ></TextField>
 
@@ -392,6 +462,7 @@ export const AddHotelScreen = () => {
                     name="numberOfBudgetRooms"
                     placeholder="Number of budget rooms"
                     autoFocus
+                    value={values.numberOfBudgetRooms}
                     onChange={handleChange}
                   ></TextField>
 
@@ -411,8 +482,29 @@ export const AddHotelScreen = () => {
                     name="numberOfPremiumRooms"
                     placeholder="Number of Premium rooms"
                     autoFocus
+                    value={values.numberOfPremiumRooms}
                     onChange={handleChange}
                   ></TextField>
+
+                  {!mainImage && hotel && hotel.mainImage && (
+                    <div>
+                      <img src={hotel.mainImage} style={{ width: '32%' }} />
+                    </div>
+                  )}
+
+                  {mainImage && (
+                    <div>
+                      <img src={mainImage} style={{ width: '32%' }} />
+                      <Button
+                        onClick={() => {
+                          setMainImage(null);
+                          values.mainImage = null;
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  )}
 
                   <ErrorMessage name="mainImage">
                     {(error) => (
@@ -430,6 +522,7 @@ export const AddHotelScreen = () => {
                     name="mainImage"
                     placeholder="Display image"
                     autoFocus
+                    value={values.mainImage}
                     onChange={multiFileUploadHandler}
                   ></TextField>
 
@@ -450,6 +543,7 @@ export const AddHotelScreen = () => {
                     name="extraImages"
                     placeholder="Extra images"
                     autoFocus
+                    value={values.extraImages}
                     onChange={multiFileUploadHandler}
                   ></TextField>
 

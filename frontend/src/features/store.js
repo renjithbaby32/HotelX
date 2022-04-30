@@ -15,4 +15,5 @@ export const store = configureStore({
     booking: bookingReducer,
     admin: adminReducer,
   },
+  devTools: process.env.NODE_ENV !== 'production',
 });

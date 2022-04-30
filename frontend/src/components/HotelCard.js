@@ -7,13 +7,20 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 export const HotelCard = ({ hotel, viewMoreFunction }) => {
   const navigate = useNavigate();
 
+  const { hotelOwner } = useSelector((state) => state.hotelOwner);
+
   const viewMoreHandler = () => {
     navigate(`/hotel/${hotel._id}`);
+  };
+
+  const editHandler = () => {
+    navigate(`/hotel-owner/edit/${hotel._id}`);
   };
 
   return (
@@ -50,6 +57,11 @@ export const HotelCard = ({ hotel, viewMoreFunction }) => {
           ) : (
             <Button variant="outlined" disabled>
               Waiting for approval
+            </Button>
+          )}
+          {hotelOwner && (
+            <Button onClick={editHandler} variant="outlined">
+              Edit
             </Button>
           )}
         </CardActions>

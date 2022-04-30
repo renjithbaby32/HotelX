@@ -78,7 +78,7 @@ export const addHotel = asyncHandler(async (req, res) => {
     costPerDayBudget,
     costPerDayPremium,
     totalNumberOfRooms,
-    hasPremiumRooms,
+    hasPremiumRooms: numberOfPremiumRooms > 0 ? true : false,
     numberOfBudgetRooms,
     numberOfPremiumRooms,
     mainImage: mainImageUploaded.secure_url,
@@ -95,6 +95,64 @@ export const addHotel = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Invalid hotel data');
   }
+});
+
+/**
+ * @api {post} /api/v1/hotel/edit
+ * @apiName HotelEdit
+ * Request body contains name of the hotel, its owner's id, state, city, coordinates, postal code, stars, cost per day budget, number of budget rooms, cost per day premium,
+ * total number of premium rooms, total number of rooms,and whether it has premium rooms
+ * If the hotel owner is blocked, he/she will not be able to signin.
+ * Else, email and password is verified and a token is generated if the credentials are valid.
+ */
+
+export const editHotel = asyncHandler(async (req, res) => {
+  const {
+    name,
+    state,
+    city,
+    coordinates,
+    postalCode,
+    stars,
+    costPerDayBudget,
+    costPerDayPremium,
+    totalNumberOfRooms,
+    numberOfBudgetRooms,
+    numberOfPremiumRooms,
+    hotelOwnerId,
+    hotelId,
+    discountPercentage,
+  } = req.body;
+
+  const coordinatesArray = coordinates.split(',');
+
+  const hotel = await Hotel.findById(hotelId);
+
+  hotel.name = name;
+  hotel.state = state;
+  hotel.city = city;
+  hotel.coordinates = {
+    type: 'Point',
+    coordinates: [coordinatesArray[0], coordinatesArray[1]],
+  };
+  hotel.postalCode = postalCode;
+  hotel.stars = stars;
+  hotel.costPerDayBudget = costPerDayBudget;
+  hotel.costPerDayPremium = costPerDayPremium;
+  hotel.totalNumberOfRooms = totalNumberOfRooms;
+  hotel.hasPremiumRooms = numberOfPremiumRooms > 0 ? true : false;
+  hotel.numberOfBudgetRooms = numberOfBudgetRooms;
+  hotel.numberOfPremiumRooms = numberOfPremiumRooms;
+  hotel.owner = hotelOwnerId;
+  hotel.discountPercentage = discountPercentage;
+
+  await hotel.save();
+
+  res.status(201).json({
+    _id: hotel._id,
+    name: hotel.name,
+    owner: hotel.owner,
+  });
 });
 
 /**

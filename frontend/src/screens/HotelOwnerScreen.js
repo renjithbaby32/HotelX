@@ -5,8 +5,7 @@ import { getHotels } from '../features/hotelOwners/hotelOwnerSlice';
 import { Col, Row } from 'react-bootstrap';
 import { HotelCard } from '../components/HotelCard';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Button, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 
 export const HotelOwnerScreen = () => {
   const dispatch = useDispatch();

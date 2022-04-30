@@ -83,6 +83,10 @@ function App() {
                   path={'add-promotion'}
                   element={<AddPromotionScreen />}
                 ></Route>
+                <Route
+                  path={'/hotel-owner/edit/:hotelid'}
+                  element={<AddHotelScreen />}
+                ></Route>
               </Route>
             </Routes>
           </Container>

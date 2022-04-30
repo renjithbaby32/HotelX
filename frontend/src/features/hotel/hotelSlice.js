@@ -9,6 +9,7 @@ const initialState = {
   hotelReview: null,
   reviews: [],
   featuredPost: null,
+  hotelEdited: false,
 };
 
 export const addHotel = createAsyncThunk(
@@ -22,6 +23,24 @@ export const addHotel = createAsyncThunk(
 
     const { data } = await axios.post(
       '/api/v1/hotel/register',
+      hotelDetails,
+      config
+    );
+    return data;
+  }
+);
+
+export const editHotel = createAsyncThunk(
+  'hotels/editHotel',
+  async (hotelDetails) => {
+    const config = {
+      headers: {
+        'Content-Type': 'Application/json',
+      },
+    };
+
+    const { data } = await axios.post(
+      '/api/v1/hotel/edit',
       hotelDetails,
       config
     );
@@ -95,6 +114,9 @@ const hotelSlice = createSlice({
     resetNewHotelAddedState: (state) => {
       state.newHotelAdded = false;
     },
+    resetNewHotelEditedState: (state) => {
+      state.hotelEdited = false;
+    },
     resetHotelReviewState: (state) => {
       state.reviews = null;
     },
@@ -115,6 +137,9 @@ const hotelSlice = createSlice({
     [addHotel.fulfilled]: (state, { payload }) => {
       return { ...state, newHotelAdded: true };
     },
+    [editHotel.fulfilled]: (state, { payload }) => {
+      return { ...state, hotelEdited: true };
+    },
     [addHotelReview.fulfilled]: (state, { payload }) => {
       return { ...state, hotelReview: payload };
     },
@@ -128,5 +153,8 @@ const hotelSlice = createSlice({
 });
 
 export default hotelSlice.reducer;
-export const { resetNewHotelAddedState, resetHotelReviewState } =
-  hotelSlice.actions;
+export const {
+  resetNewHotelAddedState,
+  resetHotelReviewState,
+  resetNewHotelEditedState,
+} = hotelSlice.actions;

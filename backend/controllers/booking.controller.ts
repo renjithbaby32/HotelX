@@ -11,7 +11,6 @@ import {
 import { RequestWithIdentity } from '../middleware/authMiddleware';
 import { razorpay } from '../config/razorpay.config';
 import shortid from 'shortid';
-import nodemailer from 'nodemailer';
 
 type resultType = {
   customerName: string;
@@ -201,27 +200,6 @@ export const bookRooms = asyncHandler(async (req: RequestWithIdentity, res) => {
       await hotel.save();
     }
   }
-
-  let testAccount = await nodemailer.createTestAccount();
-  let transporter = nodemailer.createTransport({
-    name: 'smtp.ethereal.email',
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: testAccount.user, // generated ethereal user
-      pass: testAccount.pass, // generated ethereal password
-    },
-  });
-
-  // send mail with defined transport object
-  let info = await transporter.sendMail({
-    from: '"Fred Foo 👻" <foo@example.com>', // sender address
-    to: 'renjithbabyofficial@gmail.com, baz@example.com', // list of receivers
-    subject: 'Hello ✔', // Subject line
-    text: 'Hello world?', // plain text body
-    html: '<b>Hello world?</b>', // html body
-  });
 
   res.json(booking);
 });
