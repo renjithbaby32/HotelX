@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getHotelDetails = exports.getNearbyHotels = exports.getHotels = exports.addHotel = void 0;
+exports.getHotelDetails = exports.getNearbyHotels = exports.getHotels = exports.editHotel = exports.addHotel = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const hotel_model_1 = __importDefault(require("../models/hotel.model"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
@@ -67,7 +67,7 @@ exports.addHotel = (0, express_async_handler_1.default)((req, res) => __awaiter(
         costPerDayBudget,
         costPerDayPremium,
         totalNumberOfRooms,
-        hasPremiumRooms,
+        hasPremiumRooms: numberOfPremiumRooms > 0 ? true : false,
         numberOfBudgetRooms,
         numberOfPremiumRooms,
         mainImage: mainImageUploaded.secure_url,
@@ -84,6 +84,42 @@ exports.addHotel = (0, express_async_handler_1.default)((req, res) => __awaiter(
         res.status(400);
         throw new Error('Invalid hotel data');
     }
+}));
+/**
+ * @api {post} /api/v1/hotel/edit
+ * @apiName HotelEdit
+ * Request body contains name of the hotel, its owner's id, state, city, coordinates, postal code, stars, cost per day budget, number of budget rooms, cost per day premium,
+ * total number of premium rooms, total number of rooms,and whether it has premium rooms
+ * If the hotel owner is blocked, he/she will not be able to signin.
+ * Else, email and password is verified and a token is generated if the credentials are valid.
+ */
+exports.editHotel = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, state, city, coordinates, postalCode, stars, costPerDayBudget, costPerDayPremium, totalNumberOfRooms, numberOfBudgetRooms, numberOfPremiumRooms, hotelOwnerId, hotelId, discountPercentage, } = req.body;
+    const coordinatesArray = coordinates.split(',');
+    const hotel = yield hotel_model_1.default.findById(hotelId);
+    hotel.name = name;
+    hotel.state = state;
+    hotel.city = city;
+    hotel.coordinates = {
+        type: 'Point',
+        coordinates: [coordinatesArray[0], coordinatesArray[1]],
+    };
+    hotel.postalCode = postalCode;
+    hotel.stars = stars;
+    hotel.costPerDayBudget = costPerDayBudget;
+    hotel.costPerDayPremium = costPerDayPremium;
+    hotel.totalNumberOfRooms = totalNumberOfRooms;
+    hotel.hasPremiumRooms = numberOfPremiumRooms > 0 ? true : false;
+    hotel.numberOfBudgetRooms = numberOfBudgetRooms;
+    hotel.numberOfPremiumRooms = numberOfPremiumRooms;
+    hotel.owner = hotelOwnerId;
+    hotel.discountPercentage = discountPercentage;
+    yield hotel.save();
+    res.status(201).json({
+        _id: hotel._id,
+        name: hotel.name,
+        owner: hotel.owner,
+    });
 }));
 /**
  * @api {get} /api/v1/hotel/gethotels
